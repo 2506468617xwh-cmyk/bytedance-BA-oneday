@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>商分游戏合集</title>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F0E8; --text: #2C1810; --accent: #E85D26; --accent-dim: #c44d1e;
+  --card: #fff; --shadow: 0 4px 12px rgba(44,24,16,0.08); --border: #e0d8cc;
+  --pixel-border: 3px solid #2C1810;
+  --font-title: 'ZCOOL KuaiLe', cursive; --font-body: 'Noto Sans SC', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--font-body); background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
+.screen { display:none; min-height:100vh; padding:20px; animation:fadeSlideIn .5s ease; }
+.screen.active { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+@keyframes fadeSlideIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100% { box-shadow:0 0 8px var(--accent); } 50% { box-shadow:0 0 20px var(--accent),0 0 40px var(--accent); } }
+@keyframes blink { 0%,100% { border-color:transparent; } 50% { border-color:var(--text); } }
+@keyframes magnifySway { 0%,100% { transform:rotate(-8deg); } 50% { transform:rotate(8deg); } }
+/* API Key Screen */
+.api-screen { gap:24px; text-align:center; }
+.api-screen .game-title { font-family:var(--font-title); font-size:clamp(2rem,6vw,3.5rem); color:var(--text); text-shadow:3px 3px 0 rgba(232,93,38,0.3); }
+.api-screen .game-subtitle { font-size:1.1rem; color:#6b5e53; margin-top:-8px; }
+.api-input-group { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; max-width:500px; width:100%; }
+.api-input-group input { flex:1; min-width:240px; padding:14px 18px; border:var(--pixel-border); border-radius:8px; font-size:1rem; background:var(--card); color:var(--text); outline:none; transition:border-color .2s; }
+.api-input-group input:focus { border-color:var(--accent); }
+.api-input-group button, .btn { padding:14px 32px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-size:1rem; font-weight:700; cursor:pointer; transition:transform .15s,box-shadow .15s; font-family:var(--font-body); box-shadow:0 4px 0 var(--accent-dim); }
+.api-input-group button:hover, .btn:hover { transform:translateY(-2px); box-shadow:0 6px 0 var(--accent-dim); }
+.api-input-group button:active, .btn:active { transform:translateY(2px); box-shadow:0 2px 0 var(--accent-dim); }
+.btn-secondary { background:#fff; color:var(--accent); border:2px solid var(--accent); box-shadow:0 4px 0 #d0c8b8; }
+.btn-locked { background:#ccc; color:#888; box-shadow:0 4px 0 #aaa; cursor:not-allowed; pointer-events:none; }
+.api-hint { font-size:.85rem; color:#999; }
+/* Character Select */
+.char-select-screen { justify-content:flex-start !important; padding-top:40px; }
+.char-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; max-width:700px; width:100%; margin-top:16px; }
+.char-card { background:var(--card); border:var(--pixel-border); border-radius:12px; padding:16px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:transform .2s,box-shadow .2s; }
+.char-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(44,24,16,0.12); }
+.char-card.selected { border-color:var(--accent); box-shadow:0 0 0 3px rgba(232,93,38,0.3); }
+.char-card img { width:64px; height:64px; border-radius:50%; object-fit:cover; image-rendering:pixelated; border:2px solid var(--border); }
+.char-card .char-name { font-weight:700; font-size:1.05rem; }
+.char-card .char-sig { font-size:.82rem; color:#888; text-align:center; line-height:1.3; }
+.char-select-screen .section-title { font-family:var(--font-title); font-size:1.8rem; margin-bottom:4px; }
+/* Game Hub */
+.hub-screen { gap:24px; }
+.hub-screen .hub-title { font-family:var(--font-title); font-size:2rem; }
+.hub-screen .char-info { font-size:.95rem; color:#888; margin-top:-12px; }
+.hub-cards { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; max-width:900px; width:100%; }
+.hub-card { background:var(--card); border:var(--pixel-border); border-radius:16px; padding:28px 22px; width:260px; text-align:center; display:flex; flex-direction:column; gap:12px; transition:transform .2s,box-shadow .2s; cursor:pointer; }
+.hub-card:hover { transform:translateY(-4px); box-shadow:0 12px 28px rgba(44,24,16,0.12); }
+.hub-card.locked { opacity:0.5; cursor:not-allowed; pointer-events:none; filter:grayscale(0.6); }
+.hub-card .card-icon { font-size:3rem; }
+.hub-card .card-title { font-family:var(--font-title); font-size:1.3rem; }
+.hub-card .card-desc { font-size:.85rem; color:#888; }
+.hub-card .card-status { font-size:.8rem; font-weight:700; padding:4px 12px; border-radius:20px; display:inline-block; }
+.hub-card .card-status.unlocked { background:#e8f5e9; color:#2e7d32; }
+.hub-card .card-status.locked-st { background:#f5f5f5; color:#999; }
+.hub-card .card-status.new { background:#fff3e0; color:var(--accent); }
+/* Case Intro */
+.intro-screen { background:#1a1a1a !important; justify-content:center !important; }
+.intro-text { color:#e8dcc8; font-family:var(--font-title); font-size:clamp(1rem,3vw,1.4rem); line-height:2.2; max-width:600px; text-align:center; white-space:pre-line; min-height:200px; }
+.intro-text .cursor { display:inline-block; width:2px; height:1.2em; background:#e8dcc8; animation:blink .8s infinite; vertical-align:text-bottom; margin-left:2px; }
+.intro-screen .btn { margin-top:30px; opacity:0; transition:opacity .5s; }
+.intro-screen .btn.show { opacity:1; }
+/* Game 1 Canvas */
+.main-screen { flex-direction:row !important; flex-wrap:wrap; justify-content:center !important; align-items:flex-start !important; gap:16px; padding:10px; }
+.game-left { flex:0 0 auto; display:flex; flex-direction:column; align-items:center; }
+.game-topbar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; padding:10px 16px; background:var(--card); border:var(--pixel-border); border-radius:12px; margin-bottom:10px; width:100%; max-width:800px; }
+.game-topbar .char-badge { font-weight:700; color:var(--accent); }
+.game-topbar .clue-count { font-size:.9rem; color:#888; }
+.game-topbar .clue-count span { color:var(--accent); font-weight:700; }
+.canvas-wrapper { position:relative; border:var(--pixel-border); border-radius:12px; overflow:hidden; background:#1a1a1a; line-height:0; max-width:800px; width:100%; }
+.canvas-wrapper canvas { display:block; width:100%; height:auto; image-rendering:pixelated; cursor:default; }
+.canvas-hint { position:absolute; bottom:12px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.78); color:#fff; padding:8px 20px; border-radius:20px; font-size:.85rem; font-family:var(--font-body); pointer-events:auto; cursor:pointer; display:none; z-index:10; white-space:nowrap; }
+.canvas-hint.show { display:block; animation:fadeSlideIn .25s ease; }
+/* D-Pad */
+.dpad-container { display:none; justify-content:center; margin-top:12px; width:100%; max-width:800px; }
+.dpad-grid { display:grid; grid-template-columns:70px 70px 70px; grid-template-rows:70px 70px 70px; gap:5px; }
+.dpad-btn { width:70px; height:70px; background:var(--card); border:3px solid #2C1810; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; cursor:pointer; -webkit-tap-highlight-color:transparent; touch-action:manipulation; user-select:none; transition:background .1s; }
+.dpad-btn:active { background:var(--accent); color:#fff; }
+.dpad-up { grid-column:2; grid-row:1; } .dpad-left { grid-column:1; grid-row:2; }
+.dpad-center { grid-column:2; grid-row:2; background:transparent; border-color:transparent; pointer-events:none; }
+.dpad-right { grid-column:3; grid-row:2; } .dpad-down { grid-column:2; grid-row:3; }
+.game-bottombar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; padding:8px 16px; background:var(--card); border:var(--pixel-border); border-radius:12px; margin-top:10px; font-size:.85rem; color:#888; width:100%; max-width:800px; }
+/* Miner Game */
+.miner-screen { gap:0; padding:10px; justify-content:flex-start !important; }
+.miner-topbar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; padding:12px 20px; background:linear-gradient(135deg,#2a1a0a,#3d2810); border:3px solid #5a3820; border-radius:14px; margin-bottom:10px; width:100%; max-width:700px; box-shadow:0 4px 0 #1a0a00,inset 0 1px 0 rgba(255,200,100,0.15); font-family:'ZCOOL KuaiLe',cursive; }
+.miner-topbar span { color:#F5DEB3; text-shadow:0 1px 3px rgba(0,0,0,0.5); font-size:1rem; }
+.miner-topbar .score { color:#FFD700; font-size:1.2rem; text-shadow:0 0 8px rgba(255,215,0,0.6); }
+.miner-topbar .timer { color:#FFA07A; font-size:1.2rem; }
+.miner-topbar .timer.urgent { color:#FF4500; animation:blink .5s infinite; text-shadow:0 0 10px rgba(255,69,0,0.8); }
+.miner-canvas-wrap { border:4px solid #5a3820; border-radius:14px; overflow:hidden; background:#1a0d05; line-height:0; max-width:700px; width:100%; box-shadow:0 8px 0 #0a0500,0 0 30px rgba(255,150,50,0.2); position:relative; }
+.miner-canvas-wrap canvas { display:block; width:100%; height:auto; image-rendering:pixelated; }
+.miner-hint { text-align:center; padding:8px 16px; color:#C4956A; font-size:.85rem; background:rgba(42,26,10,0.6); border-radius:8px; margin-top:6px; border:1px solid rgba(90,56,32,0.4); max-width:700px; width:100%; }
+/* BATI */
+.bati-wrap { max-width:600px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:20px; padding-top:10px; }
+.bati-progress-bar { width:100%; height:8px; background:#e0d5c8; border-radius:4px; overflow:hidden; }
+.bati-progress-fill { height:100%; background:var(--accent); border-radius:4px; transition:width 0.4s ease; }
+.bati-question-card { background:var(--card); border:var(--pixel-border); border-radius:16px; padding:24px; box-shadow:0 4px 0 rgba(44,24,16,0.08); }
+.bati-question-num { font-size:.8rem; color:#999; margin-bottom:8px; }
+.bati-question-text { font-family:'ZCOOL KuaiLe',cursive; font-size:1.2rem; color:var(--text); line-height:1.6; margin-bottom:20px; }
+.bati-options { display:flex; flex-direction:column; gap:10px; }
+.bati-option { background:#FFFDF7; border:2px solid var(--border); border-radius:10px; padding:14px 16px; cursor:pointer; font-size:.95rem; color:var(--text); transition:all .15s; text-align:left; font-family:'Noto Sans SC',sans-serif; line-height:1.5; }
+.bati-option:hover { border-color:var(--accent); background:#FFF5EE; transform:translateX(4px); }
+.bati-option.selected { border-color:var(--accent); background:linear-gradient(135deg,#FFF0E8,#FFE8D8); box-shadow:0 2px 8px rgba(232,93,38,0.2); }
+.bati-option.wrong { animation:shake .4s ease; border-color:#999; background:#f5f5f5; color:#999; }
+.bati-result-card { background:var(--card); border:var(--pixel-border); border-radius:20px; padding:32px 24px; text-align:center; box-shadow:0 6px 0 rgba(44,24,16,0.1); }
+.bati-result-code { font-family:'ZCOOL KuaiLe',cursive; font-size:3.5rem; color:var(--accent); letter-spacing:6px; text-shadow:3px 3px 0 rgba(232,93,38,0.2); margin:12px 0; }
+.bati-result-name { font-family:'ZCOOL KuaiLe',cursive; font-size:1.8rem; color:var(--text); margin-bottom:12px; }
+.bati-result-desc { font-size:.95rem; color:#6b5e53; line-height:1.7; margin-bottom:20px; }
+.bati-sprite-wrap { margin:16px auto; display:flex; justify-content:center; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+/* Clue Panel */
+.clue-panel { width:280px; background:var(--card); border:var(--pixel-border); border-radius:12px; padding:16px; transition:all .3s; position:sticky; top:10px; max-height:calc(100vh - 20px); overflow-y:auto; }
+.clue-panel.collapsed { width:50px; padding:10px; }
+.clue-panel.collapsed .clue-content { display:none; }
+.clue-panel h3 { font-family:var(--font-title); margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; }
+.clue-panel .toggle-btn { cursor:pointer; font-size:1.2rem; background:none; border:none; color:var(--text); }
+.clue-card { background:#fdf9f3; border:2px solid var(--border); border-radius:8px; padding:10px; margin-bottom:8px; font-size:.85rem; cursor:pointer; transition:border-color .15s,box-shadow .15s; }
+.clue-card:hover { border-color:var(--accent); box-shadow:0 2px 8px rgba(232,93,38,0.12); }
+.clue-card .clue-icon { font-size:1.1rem; margin-right:4px; }
+.clue-card .clue-hint { font-size:.7rem; color:var(--accent); margin-top:4px; text-align:right; }
+.clue-card .clue-detail { display:none; margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); font-size:.82rem; color:#5a4a3a; line-height:1.6; }
+.clue-card.expanded .clue-detail { display:block; animation:fadeSlideIn .25s ease; }
+.clue-card.expanded { border-color:var(--accent); background:#fef8f3; }
+.accuse-btn { display:block; width:100%; margin-top:12px; text-align:center; }
+.accuse-btn:disabled { opacity:.4; cursor:not-allowed; transform:none !important; }
+/* Scene Modal */
+.modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100; align-items:center; justify-content:center; }
+.modal-overlay.active { display:flex; }
+.modal-box { background:var(--bg); border:var(--pixel-border); border-radius:16px; padding:24px; max-width:550px; width:90%; max-height:80vh; overflow-y:auto; position:relative; animation:fadeSlideIn .3s ease; }
+.modal-box h3 { font-family:var(--font-title); font-size:1.4rem; margin-bottom:8px; }
+.modal-box .scene-desc { color:#6b5e53; margin-bottom:16px; line-height:1.6; }
+.modal-box .interact-group { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0; }
+.modal-box .interact-btn { padding:10px 20px; background:var(--card); border:2px solid var(--border); border-radius:8px; cursor:pointer; font-size:.9rem; transition:all .15s; font-family:var(--font-body); }
+.modal-box .interact-btn:hover { border-color:var(--accent); color:var(--accent); }
+.modal-close { position:absolute; top:10px; right:14px; background:none; border:none; font-size:1.5rem; cursor:pointer; color:#999; }
+.modal-box .llm-output { background:var(--card); border:2px solid var(--border); border-radius:10px; padding:14px; margin:12px 0; line-height:1.7; font-size:.9rem; min-height:40px; }
+.llm-loading-wrap { display:flex; align-items:center; gap:14px; padding:18px 14px; margin:12px 0; background:var(--card); border:2px solid var(--border); border-radius:10px; }
+.llm-loading-wrap .magnify-icon { font-size:2rem; animation:magnifySway 1.4s ease-in-out infinite; display:inline-block; }
+.llm-loading-wrap .loading-text { font-size:.95rem; color:#6b5e53; font-family:var(--font-body); min-width:150px; }
+.chat-input-row { display:flex; gap:8px; margin-top:10px; }
+.chat-input-row input { flex:1; padding:10px; border:2px solid var(--border); border-radius:8px; font-size:.9rem; font-family:var(--font-body); }
+.chat-input-row button { padding:10px 16px; }
+.feishu-log { background:#1a1a2e; color:#c8d6e5; border-radius:10px; padding:16px; font-family:monospace; font-size:.82rem; line-height:1.8; }
+.feishu-log .log-entry { padding:4px 8px; border-radius:4px; }
+.feishu-log .log-entry.highlight { background:rgba(232,93,38,0.3); color:#ff8866; font-weight:700; }
+.feishu-log .log-time { color:#8395a7; margin-right:10px; }
+/* Accusation */
+.accuse-screen { gap:20px; }
+.accuse-screen .section-title { font-family:var(--font-title); font-size:1.6rem; }
+.suspect-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; max-width:700px; width:100%; }
+.suspect-card { background:var(--card); border:3px solid var(--border); border-radius:10px; padding:12px 8px; text-align:center; cursor:pointer; transition:all .2s; }
+.suspect-card:hover { border-color:var(--accent); }
+.suspect-card.picked { border-color:var(--accent); background:#fef5f0; box-shadow:0 0 12px rgba(232,93,38,0.3); }
+.suspect-card img { width:48px; height:48px; border-radius:50%; object-fit:cover; image-rendering:pixelated; margin-bottom:6px; }
+.suspect-card .s-name { font-weight:700; font-size:.85rem; }
+/* Ending */
+.ending-screen { background:#1a1a1a !important; text-align:center; gap:24px; }
+.ending-confession { color:#e8dcc8; max-width:600px; line-height:1.8; font-size:1rem; }
+.ending-reactions { color:#c8b898; max-width:600px; font-size:.9rem; line-height:2; }
+.ending-reactions .react-item { margin:6px 0; opacity:0; animation:fadeSlideIn .5s forwards; }
+.letter-screen { background:var(--bg) !important; gap:20px; }
+.letter-paper { background:linear-gradient(180deg,#fffef7 0%,#fdf8ed 100%); border:2px solid #d4c8a8; border-radius:4px; max-width:550px; width:90%; padding:36px 28px; box-shadow:0 8px 32px rgba(44,24,16,0.1); line-height:2; font-size:.95rem; position:relative; }
+.letter-paper::before { content:''; position:absolute; top:0; left:40px; width:1px; height:100%; background:rgba(232,93,38,0.15); }
+.letter-paper .dear { font-size:1.2rem; font-weight:700; margin-bottom:12px; }
+.letter-paper .sign-off { text-align:right; margin-top:20px; color:var(--accent); font-weight:700; }
+.toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--accent); color:#fff; padding:12px 28px; border-radius:30px; font-weight:700; z-index:200; animation:fadeSlideIn .3s ease; box-shadow:0 4px 16px rgba(232,93,38,0.4); }
+.spinner { display:inline-block; width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .6s linear infinite; margin-right:8px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+/* Responsive */
+@media (max-width:768px) {
+  .char-grid { grid-template-columns:1fr 1fr; gap:10px; }
+  .char-card { padding:12px 8px; } .char-card img { width:48px; height:48px; }
+  .suspect-grid { grid-template-columns:repeat(3,1fr); gap:8px; }
+  .main-screen { flex-direction:column !important; align-items:center !important; }
+  .clue-panel { width:100%; position:static; max-height:none; }
+  .clue-panel.collapsed { width:100%; }
+  .dpad-container { display:flex; }
+  .canvas-hint { bottom:60px; font-size:.78rem; padding:6px 16px; }
+  .hub-cards { flex-direction:column; align-items:center; }
+  .hub-card { width:100%; max-width:320px; }
+}
+@media (max-width:480px) {
+  .suspect-grid { grid-template-columns:repeat(2,1fr); } .char-grid { grid-template-columns:1fr; }
+  .game-topbar { font-size:.8rem; }
+  .dpad-btn { width:56px; height:56px; font-size:1.3rem; }
+  .dpad-grid { grid-template-columns:56px 56px 56px; grid-template-rows:56px 56px 56px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 0: API KEY -->
+<div id="screen-api" class="screen active api-screen">
+  <h1 class="game-title">商分的一天</h1>
+  <p class="game-subtitle">Game Hub · 职场剧本杀 &amp; 矿工 &amp; BATI测试</p>
+  <button class="btn" style="margin-top:32px;font-size:1.1rem;padding:14px 40px;" onclick="enterGame()">开始游戏 →</button>
+  <p class="api-hint" style="margin-top:16px;">献给商分上海的哥姐们 ❤️</p>
+</div>
+
+<!-- SCREEN 1: CHARACTER SELECT -->
+<div id="screen-char" class="screen char-select-screen">
+  <h2 class="section-title">选择你的身份</h2>
+  <p style="color:#888;margin-bottom:8px;">点击角色卡片选择，开始游戏合集</p>
+  <div class="char-grid" id="char-grid"></div>
+  <button class="btn" id="btn-char-confirm" style="margin-top:20px;" disabled onclick="confirmCharacter()">确认选择，进入游戏大厅</button>
+</div>
+
+<!-- SCREEN HUB -->
+<div id="screen-hub" class="screen hub-screen">
+  <h2 class="hub-title">🎮 游戏大厅</h2>
+  <p class="char-info" id="hub-char-info"></p>
+  <div class="hub-cards">
+    <div class="hub-card" id="hub-game1" onclick="startGame1()">
+      <div class="card-icon">🔍</div>
+      <div class="card-title">周报失踪之谜</div>
+      <div class="card-desc">商分上海 · 职场剧本杀</div>
+      <div class="card-status unlocked" id="hub-status-1">✅ 可进入</div>
+    </div>
+    <div class="hub-card locked" id="hub-game2">
+      <div class="card-icon">⛏️</div>
+      <div class="card-title">职场矿工</div>
+      <div class="card-desc">黄金矿工 · 摸鱼大作战</div>
+      <div class="card-status locked-st" id="hub-status-2">🔒 通关Game 1解锁</div>
+    </div>
+    <div class="hub-card locked" id="hub-game3">
+      <div class="card-icon">🧬</div>
+      <div class="card-title">BATI人格测试</div>
+      <div class="card-desc">商分人 · 你是哪种打工生物？</div>
+      <div class="card-status locked-st" id="hub-status-3">🔒 通关Game 2解锁</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN LOADING -->
+<div id="screen-loading-assets" class="screen" style="flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#F5F0E8;gap:20px;">
+  <div style="font-family:'ZCOOL KuaiLe';font-size:1.6rem;color:#2C1810;">正在载入现场...</div>
+  <div class="spinner" style="width:40px;height:40px;border-width:4px;"></div>
+  <div style="font-size:.85rem;color:#999;font-family:'Noto Sans SC';">素材加载中，请稍候</div>
+</div>
+
+<!-- GAME 1: INTRO -->
+<div id="screen-intro" class="screen intro-screen">
+  <div class="intro-text" id="intro-text"></div>
+  <button class="btn" id="btn-start-investigate" onclick="startGame1Map()">开始调查</button>
+</div>
+
+<!-- GAME 1: MAIN -->
+<div id="screen-main" class="screen main-screen">
+  <div class="game-left">
+    <div class="game-topbar">
+      <span class="char-badge" id="top-char-name">@柯晗</span>
+      <span class="clue-count">线索: <span id="clue-num">0</span>/5</span>
+      <button class="btn-secondary" style="padding:6px 14px;font-size:.8rem;margin-left:auto;" onclick="toggleCluePanel()">📒 线索本</button>
+    </div>
+    <div class="canvas-wrapper" id="canvas-wrapper">
+      <canvas id="game-canvas" width="800" height="500"></canvas>
+      <div class="canvas-hint" id="canvas-hint" onclick="triggerScene()">按 E 键 / 点击此处 进行调查</div>
+      <div id="guide-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.78);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:default;">
+        <div id="guide-speech" style="background:#fff;border:3px solid #2C1810;border-radius:14px;padding:18px 24px;max-width:480px;width:90%;margin-bottom:28px;position:relative;font-size:16px;font-family:'Noto Sans SC',sans-serif;color:#2C1810;line-height:1.7;opacity:0;transform:translateY(30px);transition:all 0.5s ease-out;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+          <div id="guide-overlay-text"></div>
+          <span onclick="hideGuide()" style="position:absolute;top:10px;right:14px;cursor:pointer;font-size:16px;color:#888;font-weight:bold;transition:color 0.15s;" onmouseover="this.style.color='#E85D26'" onmouseout="this.style.color='#888'">✕</span>
+          <div style="position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #2C1810;"></div>
+          <div style="position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid #fff;"></div>
+        </div>
+        <div id="guide-figure" style="transform:translateY(200px);transition:transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);display:flex;flex-direction:column;align-items:center;gap:14px;">
+          <div style="font-size:18px;font-weight:bold;color:#fff;font-family:'Noto Sans SC',sans-serif;text-shadow:0 0 8px rgba(0,0,0,0.9),0 2px 4px rgba(0,0,0,0.5);letter-spacing:1px;z-index:1;position:relative;">薛师傅</div>
+          <div style="position:relative;width:48px;height:72px;image-rendering:pixelated;transform:scale(1.3);margin-top:12px;">
+            <div style="position:absolute;left:6px;top:0;width:36px;height:10px;background:#1a1a1a;border-radius:4px 4px 0 0;"></div>
+            <div style="position:absolute;left:2px;top:5px;width:14px;height:8px;background:#1a1a1a;border-radius:0 0 0 3px;"></div>
+            <div style="position:absolute;left:10px;top:2px;width:28px;height:7px;background:#2a2a2a;"></div>
+            <div style="position:absolute;left:8px;top:10px;width:32px;height:20px;background:#FDDCB5;border-radius:3px;"></div>
+            <div style="position:absolute;left:10px;top:12px;width:10px;height:6px;background:#ffe8c8;border-radius:1px;"></div>
+            <div style="position:absolute;left:12px;top:15px;width:8px;height:6px;background:#fff;border-radius:1px;"></div>
+            <div style="position:absolute;left:28px;top:15px;width:8px;height:6px;background:#fff;border-radius:1px;"></div>
+            <div style="position:absolute;left:14px;top:16px;width:4px;height:4px;background:#1a1a1a;border-radius:1px;"></div>
+            <div style="position:absolute;left:30px;top:16px;width:4px;height:4px;background:#1a1a1a;border-radius:1px;"></div>
+            <div style="position:absolute;left:10px;top:14px;width:10px;height:9px;border:2px solid #2C1810;border-radius:2px;background:transparent;box-sizing:border-box;"></div>
+            <div style="position:absolute;left:28px;top:14px;width:10px;height:9px;border:2px solid #2C1810;border-radius:2px;background:transparent;box-sizing:border-box;"></div>
+            <div style="position:absolute;left:20px;top:16px;width:6px;height:2px;background:#2C1810;"></div>
+            <div style="position:absolute;left:18px;top:27px;width:12px;height:2px;background:#c4956a;border-radius:1px;"></div>
+            <div style="position:absolute;left:6px;top:30px;width:36px;height:22px;background:#2a2a3a;border-radius:2px;"></div>
+            <div style="position:absolute;left:6px;top:30px;width:8px;height:22px;background:rgba(255,255,255,0.1);"></div>
+            <div style="position:absolute;left:18px;top:30px;width:12px;height:7px;background:#3a3a4a;"></div>
+            <div style="position:absolute;left:0;top:34px;width:14px;height:10px;background:#2a2a3a;border-radius:2px;"></div>
+            <div style="position:absolute;left:2px;top:32px;width:8px;height:6px;background:#FDDCB5;border-radius:1px;"></div>
+            <div style="position:absolute;left:34px;top:34px;width:14px;height:10px;background:#2a2a3a;border-radius:2px;"></div>
+            <div style="position:absolute;left:38px;top:32px;width:8px;height:6px;background:#FDDCB5;border-radius:1px;"></div>
+            <div style="position:absolute;left:10px;top:52px;width:10px;height:16px;background:#1a1a2e;border-radius:0 0 2px 2px;"></div>
+            <div style="position:absolute;left:28px;top:52px;width:10px;height:16px;background:#1a1a2e;border-radius:0 0 2px 2px;"></div>
+            <div style="position:absolute;left:8px;top:66px;width:14px;height:4px;background:#0a0a1a;border-radius:0 0 2px 2px;"></div>
+            <div style="position:absolute;left:26px;top:66px;width:14px;height:4px;background:#0a0a1a;border-radius:0 0 2px 2px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dpad-container" id="dpad-container">
+      <div class="dpad-grid">
+        <button class="dpad-btn dpad-up" onpointerdown="dpadDown('up')" onpointerup="dpadUp()" onpointerleave="dpadUp()">▲</button>
+        <button class="dpad-btn dpad-left" onpointerdown="dpadDown('left')" onpointerup="dpadUp()" onpointerleave="dpadUp()">◀</button>
+        <div class="dpad-btn dpad-center"></div>
+        <button class="dpad-btn dpad-right" onpointerdown="dpadDown('right')" onpointerup="dpadUp()" onpointerleave="dpadUp()">▶</button>
+        <button class="dpad-btn dpad-down" onpointerdown="dpadDown('down')" onpointerup="dpadUp()" onpointerleave="dpadUp()">▼</button>
+      </div>
+    </div>
+    <div class="game-bottombar">
+      <span id="game-time">周三 20:00</span>
+      <span id="game-hint">WASD / 方向键移动小人，进入区域后按 E 调查</span>
+    </div>
+  </div>
+  <div class="clue-panel" id="clue-panel">
+    <h3>📒 线索本 <button class="toggle-btn" onclick="toggleCluePanel()">◀</button></h3>
+    <div class="clue-content" id="clue-list"><p style="color:#aaa;font-size:.85rem;">尚未收集到线索，快去调查吧！</p></div>
+    <button class="btn accuse-btn" id="btn-accuse" disabled onclick="openAccusation()">🔍 指认真凶</button>
+  </div>
+</div>
+
+<!-- GAME 2: MINER -->
+<div id="screen-miner" class="screen miner-screen">
+  <div class="miner-topbar">
+    <span>⛏️ 职场矿工</span>
+    <span class="score" id="miner-score">💰 0 / 50</span>
+    <span class="timer" id="miner-timer">⏱ 60s</span>
+  </div>
+  <div class="miner-canvas-wrap"><canvas id="miner-canvas" width="700" height="500"></canvas></div>
+  <p class="miner-hint" id="miner-hint">空格键 / 点击屏幕 发射钩爪</p>
+  <button class="btn" id="miner-back-btn" style="display:none;margin-top:10px;" onclick="endMinerGame()">返回游戏大厅</button>
+  <button class="btn" id="miner-retry-btn" style="display:none;margin-top:10px;" onclick="restartMiner()">重新挑战</button>
+  <div id="miner-guide-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.78);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:20px;cursor:default;">
+    <div class="miner-guide-speech" style="background:#fff;border:3px solid #2C1810;border-radius:14px;padding:18px 24px;max-width:480px;width:90%;position:relative;font-size:16px;font-family:'Noto Sans SC',sans-serif;color:#2C1810;line-height:1.7;box-shadow:0 8px 32px rgba(0,0,0,0.3);opacity:0;transform:translateY(30px);transition:all 0.5s ease-out;">
+      <div id="miner-guide-text"></div>
+      <span onclick="hideMinerGuide()" style="position:absolute;top:10px;right:14px;cursor:pointer;font-size:16px;color:#888;font-weight:bold;" onmouseover="this.style.color='#E85D26'" onmouseout="this.style.color='#888'">✕</span>
+    </div>
+    <div class="miner-guide-figure" style="transform:translateY(200px);transition:transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);display:flex;flex-direction:column;align-items:center;gap:14px;">
+      <div style="font-size:18px;font-weight:bold;color:#fff;font-family:'Noto Sans SC',sans-serif;text-shadow:0 0 8px rgba(0,0,0,0.9),0 2px 4px rgba(0,0,0,0.5);letter-spacing:1px;position:relative;z-index:1;">薛师傅</div>
+      <div style="position:relative;width:48px;height:72px;image-rendering:pixelated;transform:scale(1.3);margin-top:12px;">
+        <div style="position:absolute;left:6px;top:0;width:36px;height:10px;background:#1a1a1a;border-radius:4px 4px 0 0;"></div>
+        <div style="position:absolute;left:2px;top:5px;width:14px;height:8px;background:#1a1a1a;border-radius:0 0 0 3px;"></div>
+        <div style="position:absolute;left:10px;top:2px;width:28px;height:7px;background:#2a2a2a;"></div>
+        <div style="position:absolute;left:8px;top:10px;width:32px;height:20px;background:#FDDCB5;border-radius:3px;"></div>
+        <div style="position:absolute;left:10px;top:12px;width:10px;height:6px;background:#ffe8c8;border-radius:1px;"></div>
+        <div style="position:absolute;left:12px;top:15px;width:8px;height:6px;background:#fff;border-radius:1px;"></div>
+        <div style="position:absolute;left:28px;top:15px;width:8px;height:6px;background:#fff;border-radius:1px;"></div>
+        <div style="position:absolute;left:14px;top:16px;width:4px;height:4px;background:#1a1a1a;border-radius:1px;"></div>
+        <div style="position:absolute;left:30px;top:16px;width:4px;height:4px;background:#1a1a1a;border-radius:1px;"></div>
+        <div style="position:absolute;left:10px;top:14px;width:10px;height:9px;border:2px solid #2C1810;border-radius:2px;background:transparent;box-sizing:border-box;"></div>
+        <div style="position:absolute;left:28px;top:14px;width:10px;height:9px;border:2px solid #2C1810;border-radius:2px;background:transparent;box-sizing:border-box;"></div>
+        <div style="position:absolute;left:20px;top:16px;width:6px;height:2px;background:#2C1810;"></div>
+        <div style="position:absolute;left:18px;top:27px;width:12px;height:2px;background:#c4956a;border-radius:1px;"></div>
+        <div style="position:absolute;left:6px;top:30px;width:36px;height:22px;background:#2a2a3a;border-radius:2px;"></div>
+        <div style="position:absolute;left:6px;top:30px;width:8px;height:22px;background:rgba(255,255,255,0.1);"></div>
+        <div style="position:absolute;left:18px;top:30px;width:12px;height:7px;background:#3a3a4a;"></div>
+        <div style="position:absolute;left:0;top:34px;width:14px;height:10px;background:#2a2a3a;border-radius:2px;"></div>
+        <div style="position:absolute;left:2px;top:32px;width:8px;height:6px;background:#FDDCB5;border-radius:1px;"></div>
+        <div style="position:absolute;left:34px;top:34px;width:14px;height:10px;background:#2a2a3a;border-radius:2px;"></div>
+        <div style="position:absolute;left:38px;top:32px;width:8px;height:6px;background:#FDDCB5;border-radius:1px;"></div>
+        <div style="position:absolute;left:10px;top:52px;width:10px;height:16px;background:#1a1a2e;border-radius:0 0 2px 2px;"></div>
+        <div style="position:absolute;left:28px;top:52px;width:10px;height:16px;background:#1a1a2e;border-radius:0 0 2px 2px;"></div>
+        <div style="position:absolute;left:8px;top:66px;width:14px;height:4px;background:#0a0a1a;border-radius:0 0 2px 2px;"></div>
+        <div style="position:absolute;left:26px;top:66px;width:14px;height:4px;background:#0a0a1a;border-radius:0 0 2px 2px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME 3: BATI -->
+<div id="screen-bati" class="screen" style="justify-content:flex-start !important;padding:20px;gap:0;min-height:100vh;background:var(--bg);">
+</div>
+
+<!-- SCENE MODAL -->
+<div class="modal-overlay" id="scene-modal" onclick="if(event.target===this)closeScene()">
+  <div class="modal-box" id="scene-content"></div>
+</div>
+
+<!-- SCREEN 5: ACCUSATION -->
+<div id="screen-accuse" class="screen accuse-screen">
+  <h2 class="section-title">指认真凶</h2>
+  <p style="color:#888;">选择你认为删除了周报的嫌疑人</p>
+  <div class="suspect-grid" id="suspect-grid"></div>
+  <button class="btn" id="btn-accuse-confirm" disabled onclick="confirmAccusation()">确认指认</button>
+</div>
+
+<!-- SCREEN 6: ENDING -->
+<div id="screen-ending" class="screen ending-screen">
+  <div class="ending-confession" id="ending-confession"></div>
+  <div class="ending-reactions" id="ending-reactions"></div>
+  <button class="btn" style="margin-top:24px;" onclick="showLetter()">继续</button>
+</div>
+<div id="screen-letter" class="screen letter-screen">
+  <div class="letter-paper" id="letter-content"></div>
+  <button class="btn" style="margin-top:16px;" onclick="goToHub()">返回游戏大厅</button>
+</div>
+<div class="toast" id="toast" style="display:none;"></div>
+
+<script>
+// ============ CHARACTER DATA ============
+const AVATAR = 'assets/avatars/';
+const CHARACTERS = [
+  { id:0,  name:'柯晗',   at:'@柯晗',   title:'行业组Leader',       sig:'保持好奇心',                                    img:AVATAR+'kehan.png',         color:'#E85D26', short:'柯晗' },
+  { id:11, name:'徐妍妮', at:'@徐妍妮', title:'Agent质检',          sig:'agent质检|质检agent',                           img:AVATAR+'xuyanni.png',       color:'#E67E22', short:'妍妮' },
+  { id:1,  name:'徐储同', at:'@徐储同', title:'行业组成员',         sig:'4.27-4.30休假，有时差，消息日清晚复',             img:AVATAR+'xuchutong.png',     color:'#4A90D9', short:'储同' },
+  { id:2,  name:'杨徉',   at:'@杨徉',   title:'行业组成员',         sig:'小杨的热线又被打爆了',                           img:AVATAR+'yangyang.png',      color:'#7FB069', short:'杨徉' },
+  { id:3,  name:'傅铖茜', at:'@傅铖茜', title:'行业组成员',         sig:'果然翁需要学习影分身🥷。问题求看完再问，oa仅挂名代表不是我审批的，勿扰审批勿催，答疑、需求先提至接口人', img:AVATAR+'fuchengqian.png', color:'#9B59B6', short:'铖茜' },
+  { id:4,  name:'张路晴', at:'@张路晴', title:'行业组成员',         sig:'4.30-5.6休假，消息迟复',                         img:AVATAR+'zhangluqing.png',   color:'#F39C12', short:'路晴' },
+  { id:5,  name:'朱矜颖', at:'@朱矜颖', title:'指标/质量/创新管理', sig:'指标/质量/创新管理',                             img:AVATAR+'zhujinying.png',    color:'#E74C3C', short:'矜颖' },
+  { id:6,  name:'唐子健', at:'@唐子健', title:'商业化隐私合规',     sig:'商业化隐私合规',                                 img:AVATAR+'tangzijian.png',    color:'#34495E', short:'子健' },
+  { id:7,  name:'张艺骞', at:'@张艺骞', title:'AI能工智人外部洞察',sig:'AI能工智人外部洞察',                            img:AVATAR+'zhangyiqian.png',   color:'#1ABC9C', short:'艺骞' },
+  { id:8,  name:'翟祎玮', at:'@翟祎玮', title:'行政',              sig:'审批T+3工作日，勿催',                            img:AVATAR+'zhaiyiwei.png',     color:'#95A5A6', short:'祎玮' },
+  { id:10, name:'薛桢桢', at:'@薛桢桢', title:'行业组实习生',       sig:'没想到吧，离职的我又在这里出现了！',             img:AVATAR+'xuezhenzhen.png',   color:'#E91E63', short:'桢桢' },
+  { id:12, name:'lexi',   at:'@lexi',   title:'历史产出',           sig:'lexi的历史产出汇总',                             img:AVATAR+'lexi.png',          color:'#2ECC71', short:'lexi' },
+  { id:13, name:'游璐',   at:'@游璐',   title:'能工智人',           sig:'事情终于有了一些退展 | 一头能工智人',              img:AVATAR+'youlu.png',         color:'#E91E63', short:'游璐' },
+  { id:14, name:'朱顺莱', at:'@朱顺莱', title:'BP药品保健品',       sig:'bp药品保健品，咨询优先找接口人~准入审批商分节点工作日T+3，催审不回', img:AVATAR+'zhushunlai.png', color:'#8E44AD', short:'顺莱' },
+  { id:15, name:'李萌',   at:'@李萌',   title:'成员',              sig:'',                                              img:AVATAR+'limeng.png',        color:'#1ABC9C', short:'李萌' },
+  { id:16, name:'侯雨冰', at:'@侯雨冰', title:'ATM三诸葛',          sig:'三个诸葛亮顶一个臭皮匠-ATM三诸葛',                img:AVATAR+'houyubing.png',     color:'#F1C40F', short:'雨冰' },
+  { id:17, name:'许斯佳', at:'@许斯佳', title:'成员',              sig:'innie OFF outie ON｜cu in Jul. ^ ^',             img:AVATAR+'xusijia.png',       color:'#3498DB', short:'斯佳' },
+  { id:18, name:'李欣然', at:'@李欣然', title:'BP医疗机构',         sig:'bp医疗机构，机构销售咨询先看——咨询优先找接口人；审批商分节点工作日T+3，催审不回', img:AVATAR+'lixinran.png', color:'#E74C3C', short:'欣然' },
+  { id:19, name:'田宇洋', at:'@田宇洋', title:'成员',              sig:'已读不会是在细品',                               img:AVATAR+'tianyuyang.png',    color:'#9B59B6', short:'宇洋' },
+];
+
+// ============ ASSET PRELOADER ============
+const ASSETS = {};
+const CHARACTERS_LIST = ['翟祎玮','傅铖茜','柯晗','唐子健','徐储同','徐妍妮','薛维瀚','薛桢桢','杨徉','张路晴','张艺骞','朱矜颖','侯雨冰','李萌','李欣然','田宇洋','许斯佳','游璐','朱顺莱','lexi'];
+const ASSET_LIST = [];
+CHARACTERS_LIST.forEach(name => {
+  ASSET_LIST.push([`char_${name}_front`, `assets/characters/${name}.png`]);
+  ASSET_LIST.push([`char_${name}_back`,  `assets/characters/${name}_back.png`]);
+  ASSET_LIST.push([`char_${name}_left`,  `assets/characters/${name}_left.png`]);
+});
+ASSET_LIST.push(
+  ['furn_工位1',   'assets/furniture/工位1.png'],
+  ['furn_工位2',   'assets/furniture/工位2.png'],
+  ['furn_工位3',   'assets/furniture/工位3.png'],
+  ['furn_电梯',    'assets/furniture/电梯.png'],
+  ['furn_飞书后台','assets/furniture/飞书后台.png'],
+  ['furn_茶水间',  'assets/furniture/茶水间.png'],
+  ['furn_零食柜',  'assets/furniture/零食柜.png'],
+  ['furn_饮水机',  'assets/furniture/饮水机.png']
+);
+// Miner sprites
+ASSET_LIST.push(
+  ['miner_gold','assets/miner/金块.png'],
+  ['miner_feishu','assets/miner/飞书.png'],
+  ['miner_box','assets/miner/盲盒.png'],
+  ['miner_bg_top','assets/miner/小人站的背景.jpg'],
+  ['miner_bg_bottom','assets/miner/金块与飞书的背景.jpg']
+);
+function preloadAssets() {
+  return new Promise(resolve => {
+    let loaded = 0; const total = ASSET_LIST.length;
+    if (total === 0) { resolve(); return; }
+    ASSET_LIST.forEach(([key, src]) => {
+      const img = new Image();
+      img.onload = img.onerror = () => { ASSETS[key] = img; loaded++; if (loaded >= total) resolve(); };
+      img.src = src;
+    });
+  });
+}
+
+// ============ GAME STATE ============
+const G = {
+  screen: 'api',
+  charId: null,
+  clues: {},
+  dialogues: {},
+  yangRound: 0,
+  unlocked: new Set(['desk']),
+  unlockedGames: 3,
+};
+const UNLOCK_CHAIN = { desk:'pantry', pantry:'meeting', meeting:'elevator', elevator:'feishu' };
+const UNLOCK_LABELS = { desk:'工位区', pantry:'茶水间', meeting:'会议室', elevator:'电梯口', feishu:'飞书后台' };
+const AREA_CLICKS_NEEDED = { desk:5, pantry:1, meeting:2, elevator:1, feishu:1 };
+
+function recordClick(areaId) {
+  if (G.clues[areaId]) return;
+  if (!G.areaClicks) G.areaClicks = {};
+  if (!G.areaClicks[areaId]) G.areaClicks[areaId] = 0;
+  G.areaClicks[areaId]++;
+  const cur = G.areaClicks[areaId];
+  const need = AREA_CLICKS_NEEDED[areaId] || 1;
+  $('game-hint').textContent = `🔍 已取证 ${cur}/${need}`;
+  if (cur >= need) addClue(areaId);
+}
+
+// ============ TONE RULES ============
+const TONE_RULES = `\n\n【对话规则】称呼他人时只使用名字的后两个字（如称"维瀚"不称"薛维瀚"，称"艺骞"不称"张艺骞"，称"储同"不称"徐储同"，称"铖茜"不称"傅铖茜"）。使用 @姓名 格式提及他人时也尽量用简称。语气真实克制，像真实职场中的人。不要过于俏皮活泼。不要出现"哈哈哈"、"笑死"等网络用语。可以有轻微幽默但要克制。对话要有实质内容，推进剧情。`;
+
+// ============ HELPERS ============
+function $(id) { return document.getElementById(id); }
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = $('screen-'+id); if (el) el.classList.add('active');
+  G.screen = id;
+  if (id === 'main') { initGame1Canvas(); }
+}
+function toast(msg, ms=2000) { const t = $('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, ms); }
+
+// ============ GUIDE SYSTEM ============
+function showGuide(text) {
+  const overlay = document.getElementById('guide-overlay');
+  const speech = document.getElementById('guide-speech');
+  const figure = document.getElementById('guide-figure');
+  const textEl = document.getElementById('guide-overlay-text');
+  if (!overlay) return;
+  textEl.textContent = text; overlay.style.display = 'flex';
+  requestAnimationFrame(() => {
+    figure.style.transform = 'translateY(0)';
+    setTimeout(() => { speech.style.opacity = '1'; speech.style.transform = 'translateY(0)'; }, 400);
+  });
+}
+function hideGuide() {
+  const overlay = document.getElementById('guide-overlay');
+  const speech = document.getElementById('guide-speech');
+  const figure = document.getElementById('guide-figure');
+  if (!overlay) return;
+  speech.style.opacity = '0'; speech.style.transform = 'translateY(30px)';
+  figure.style.transform = 'translateY(200px)';
+  setTimeout(() => { overlay.style.display = 'none'; }, 600);
+}
+
+// ============ UNLOCK SYSTEM ============
+function unlockArea(areaId) { if (G.unlocked.has(areaId)) return; G.unlocked.add(areaId); toast('🔓 ' + UNLOCK_LABELS[areaId] + ' 已解锁！', 2500); }
+function isAreaUnlocked(areaId) { return G.unlocked.has(areaId); }
+
+// ============ API CALL ============
+async function callLLM(systemPrompt, userMessage) {
+  const PROXY_URL = '/api/chat';
+  try {
+    const messages = [];
+    if (systemPrompt) messages.push({ role: 'system', content: systemPrompt + TONE_RULES });
+    messages.push({ role: 'user', content: userMessage });
+    const resp = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 600, messages })
+    });
+    if (!resp.ok) { console.error(await resp.text()); return '（网络错误，请稍后重试）'; }
+    const data = await resp.json();
+    return data.choices?.[0]?.message?.content?.trim() || '（内容生成失败）';
+  } catch(e) { console.error('callLLM error:', e); return '（网络错误，请稍后重试）'; }
+}
+
+function enterGame() { showScreen('char'); buildCharGrid(); }
+function saveApiKey() { enterGame(); }
+
+// ============ SCREEN 1: CHARACTER SELECT ============
+function buildCharGrid() {
+  $('char-grid').innerHTML = CHARACTERS.map((c, idx) => `
+    <div class="char-card" data-cid="${idx}" onclick="selectChar(${idx})">
+      <img src="${c.img}" alt="${c.name}" onerror="this.style.display='none';this.insertAdjacentHTML('afterend','<div style=width:64px;height:64px;border-radius:50%;background:#e0d8cc;display:inline-flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:#999>'+this.alt[0]+'</div>')">
+      <div class="char-name">${c.at}</div>
+      <div class="char-sig">${c.sig}</div>
+    </div>`).join('');
+}
+function selectChar(id) {
+  G.charId = id;
+  document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+  document.querySelector(`.char-card[data-cid="${id}"]`)?.classList.add('selected');
+  $('btn-char-confirm').disabled = false;
+}
+function confirmCharacter() {
+  if (G.charId === null) return;
+  const c = CHARACTERS[G.charId];
+  $('top-char-name').textContent = c.at + ' · ' + c.title;
+  $('hub-char-info').textContent = '当前角色：' + c.at + ' · ' + c.title;
+  updateHubCards();
+  showScreen('hub');
+}
+
+// ============ GAME HUB ============
+function updateHubCards() {
+  const g1 = $('hub-game1'); const g2 = $('hub-game2'); const g3 = $('hub-game3');
+  const s1 = $('hub-status-1'); const s2 = $('hub-status-2'); const s3 = $('hub-status-3');
+  if (G.unlockedGames >= 1) { g1.classList.remove('locked'); s1.textContent = '✅ 可进入'; s1.className = 'card-status unlocked'; }
+  if (G.unlockedGames >= 2) { g2.classList.remove('locked'); g2.setAttribute('onclick', 'startMinerGame()'); s2.textContent = '🆕 新解锁'; s2.className = 'card-status new'; }
+  if (G.unlockedGames >= 3) { g3.classList.remove('locked'); g3.setAttribute('onclick', 'openBATIGame()'); s3.textContent = '🆕 新解锁'; s3.className = 'card-status new'; }
+}
+
+// ============ SCREEN 3: CASE INTRO (Game 1) ============
+function startGame1() { showScreen('intro'); startTypewriter(); }
+function startTypewriter() {
+  const text = `周四，双周会前夜。\n晚上8:00，@柯晗 发现——\n部门周报文档，神秘消失了。\n飞书显示：已删除。\n奇怪的是——\n今天，是@薛桢桢 离职的最后一天。\n真凶，究竟是谁？`;
+  const el = $('intro-text'); el.innerHTML = '<span class="cursor"></span>'; let i = 0;
+  const cursor = el.querySelector('.cursor');
+  function type() {
+    if (i < text.length) { cursor.before(document.createTextNode(text[i])); i++; setTimeout(type, text[i-1]==='\n' ? 300 : 60); }
+    else { cursor.remove(); $('btn-start-investigate').classList.add('show'); }
+  }
+  setTimeout(type, 400);
+}
+async function startGame1Map() {
+  showScreen('loading-assets'); await preloadAssets();
+  showScreen('main'); updateClueUI();
+  showGuide('这里似乎发生过什么……为什么不去工位区看看呢？');
+}
+
+// ============ CLUE SYSTEM ============
+const CLUE_DEFS = {
+  desk:{icon:'🔍',text:'飞书日志：22:47有文件被删除，操作设备显示为移动端',detail:'在工位区翻查飞书后台记录，你发现22:47有一条文件删除操作，来自移动设备。但账号信息模糊，只显示设备型号。桢桢离职前一直用手机处理文件……'},
+  pantry:{icon:'🔍',text:'储同证实：桢桢离职前说要帮大家"备份一下"',detail:'在茶水间偷听到储同和朱矜颖的对话——储同说桢桢离职当天下午特地说要帮大家把周报备份到云端，是好意。但操作结果怎么样，没人跟进过。'},
+  meeting:{icon:'🔍',text:'白板便签：桢桢写的备份提醒，时间是下午5点',detail:'会议室白板角落有一张便签，是桢桢的字迹："周报已备份到共享盘，大家放心～"，时间戳是17:02。但后来有人进共享盘发现那个备份文件是空的。'},
+  elevator:{icon:'🔍',text:'杨哥透露：桢桢走之前在电梯里说"手机操作好麻烦"',detail:'杨哥在电梯口说，桢桢离职当天走的时候在电梯里还在划手机，嘀咕了一句"手机操作文件好麻烦，不知道有没有搞好"。当时没人在意，现在想想……'},
+  feishu:{icon:'🔍',text:'决定性证据：删除操作来自薛桢桢的账号，设备：iPhone',detail:'飞书后台日志最终显示：22:47，由薛桢桢账号、iPhone设备执行了删除操作，文件名：Q2周报汇总.xlsx。她以为在移动文件，结果删了原始文件，备份是空的。案情终于明朗。'},
+};
+function addClue(sceneId) {
+  if (G.clues[sceneId]) return;
+  G.clues[sceneId] = CLUE_DEFS[sceneId]; updateClueUI();
+  toast('🔍 获得新线索！', 2000);
+  const next = UNLOCK_CHAIN[sceneId];
+  if (next && !G.unlocked.has(next)) { unlockArea(next); setTimeout(() => { $('game-hint').textContent = UNLOCK_LABELS[next] + ' 已解锁，快去调查！'; }, 2000); }
+  $('game-hint').textContent = '获得了新线索！';
+  setTimeout(() => { $('game-hint').textContent = 'WASD / 方向键移动小人，按 E 调查'; }, 2200);
+  const guideLines = { desk:'干得不错！茶水间那边好像有人在说话，悄悄过去听听？', pantry:'线索越来越清晰了。会议室里还有些东西没被发现……', meeting:'@杨徉刚才在电梯口，他好像知道点什么。', elevator:'最后一步——飞书后台的删除日志不会说谎。' };
+  if (guideLines[sceneId]) setTimeout(()=>{ showGuide(guideLines[sceneId]); },2500);
+}
+function updateClueUI() {
+  const count = Object.keys(G.clues).length; $('clue-num').textContent = count;
+  const list = $('clue-list');
+  list.innerHTML = count === 0 ? '<p style="color:#aaa;font-size:.85rem;">尚未收集到线索，快去调查吧！</p>' : Object.values(G.clues).map(c => `<div class="clue-card" onclick="this.classList.toggle('expanded')"><span class="clue-icon">${c.icon}</span>${c.text}<div class="clue-detail">${c.detail||''}</div><div class="clue-hint">点击查看详情</div></div>`).join('');
+  const btn = $('btn-accuse'); btn.disabled = count < 3; btn.textContent = count >= 3 ? '🔍 指认真凶' : `🔍 指认真凶（需${count}/3条线索）`;
+  if (count === 5) setTimeout(()=>{ showGuide('所有线索都到手了。没想到吧……其实我早就知道是谁了。去指认真凶吧。'); },1500);
+}
+
+// ============ LOADING ANIMATION ============
+const LOADING_TEXTS = ['正在取证中', '分析现场痕迹中', '整理线索中'];
+function createLoadingEl() {
+  const wrap = document.createElement('div'); wrap.className = 'llm-loading-wrap';
+  wrap.innerHTML = '<span class="magnify-icon">🔍</span><span class="loading-text">正在取证中</span>';
+  let idx = 0;
+  wrap._loadingTimer = setInterval(() => { idx = (idx + 1) % LOADING_TEXTS.length; const t = wrap.querySelector('.loading-text'); if (t) t.textContent = LOADING_TEXTS[idx]; }, 800);
+  return wrap;
+}
+function removeLoadingEl(wrap) { if (wrap?._loadingTimer) clearInterval(wrap._loadingTimer); if (wrap?.parentNode) wrap.remove(); }
+
+// ============ SCENE MODAL ============
+function openScene(sceneId) { pauseGameLoop(); $('scene-modal').classList.add('active'); const box = $('scene-content'); const titles = { desk:'🖥️ 工位区', pantry:'☕ 茶水间', meeting:'📋 会议室', elevator:'🛗 电梯口', feishu:'💻 飞书后台' }; box.innerHTML = `<button class="modal-close" onclick="closeScene()">✕</button><h3>${titles[sceneId]}</h3>`; switch(sceneId) { case 'desk':buildDeskScene(box);break; case 'pantry':buildPantryScene(box);break; case 'meeting':buildMeetingScene(box);break; case 'elevator':buildElevatorScene(box);break; case 'feishu':buildFeishuScene(box);break; } }
+function closeScene() { $('scene-modal').classList.remove('active'); resumeGameLoop(); }
+function triggerScene() { if (G._currentArea && isAreaUnlocked(G._currentArea)) { openScene(G._currentArea); $('canvas-hint').classList.remove('show'); } }
+
+// Scene functions
+function buildDeskScene(box){ box.innerHTML+=`<p class="scene-desc">几张工位紧挨着，桌上东西还没收走。今天是桢桢离职的最后一天，她的工位已经清空了……</p><div class="interact-group"><button class="interact-btn" onclick="sceneDeskPhone(this)">📱 手机记录</button><button class="interact-btn" onclick="sceneDeskNote(this)">📝 便利贴</button><button class="interact-btn" onclick="sceneDeskCup(this)">🥤 水杯</button><button class="interact-btn" onclick="sceneDeskFolder(this)">📁 共享盘</button><button class="interact-btn" onclick="sceneDeskPrinter(this)">🖨️ 打印记录</button></div><div id="scene-desk-output"></div>`; }
+async function sceneDeskPhone(btn){ btn.disabled=true;btn.textContent='📱'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('你正在生成一段飞书系统的设备登录记录。内容显示：当天下午5点前后，薛桢桢的账号从iPhone登录并进行了文件操作，操作类型显示为"移动/删除"，但描述模糊。同时还有其他几个同事的普通操作记录穿插其中，看起来都很正常。格式像系统日志，客观中立，暗示移动端操作容易出错，150字以内。','生成设备日志。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
+async function sceneDeskNote(btn){ btn.disabled=true;btn.textContent='📝'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一张贴在工位上的便利贴内容，是一位同事看到周报出问题后写给大家的提醒，语气自然克制，50字以内。','写一张便利贴。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
+async function sceneDeskCup(btn){ btn.disabled=true;btn.textContent='🥤'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请写一句印在马克杯上的商分团队slogan，幽默克制，15字以内。','水杯上写了什么？'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">🥤 水杯上印着：「${text||'...'}」</div>`; recordClick('desk'); }
+async function sceneDeskFolder(btn){ btn.disabled=true;btn.textContent='📁'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段共享盘文件列表。显示薛桢桢在17:02创建了一个名为"周报备份"的文件夹，但文件夹大小为0KB。同时列出其他同事的正常文件记录。格式像文件系统列表，简洁干练，150字以内。','生成共享盘内容。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
+async function sceneDeskPrinter(btn){ btn.disabled=true;btn.textContent='🖨️'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段打印机日志，列出当晚3-4条打印记录，涉及@柯晗、@朱矜颖、@张路晴，时间在20:00-23:00之间，内容与周报相关但无异常。格式像打印机日志，简洁，不做判断。','生成打印机记录。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
+function buildPantryScene(box){ box.innerHTML+=`<p class="scene-desc">储同和矜颖正在茶水间小声聊天，似乎在讨论什么……你悄悄靠近。</p><button class="interact-btn" onclick="scenePantryListen(this)" style="margin-bottom:12px;">👂 偷听对话</button><div id="scene-pantry-output"></div>`; }
+async function scenePantryListen(btn){ btn.disabled=true;btn.textContent='👂'; const out=$('scene-pantry-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段对话：@徐储同 和 @朱矜颖 在茶水间小声讨论周报失踪的事。储同提到桢桢离职前说要帮大家备份文件，朱矜颖说她当时还觉得很贴心。两人都没有想到是出了问题。对话语气自然，不要直接点出是桢桢删的，但让玩家感觉"备份这件事有点可疑"。150字以内。','生成茶水间对话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('pantry'); }
+function buildMeetingScene(box){ box.innerHTML+=`<p class="scene-desc">会议室白板上留着上次开会的痕迹，诚茜姐的笔记本还在...</p><div class="interact-group"><button class="interact-btn" onclick="sceneMeetingNote(this)">📓 笔记本</button><button class="interact-btn" onclick="sceneMeetingBoard(this)">📋 白板</button></div><div id="scene-meeting-output"></div>`; }
+async function sceneMeetingNote(btn){ btn.disabled=true;btn.textContent='📓'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段工作笔记内容，是@傅铖茜的手写笔记风格：内容主要是当天的工作安排，最后有一行备注："桢桢说已备份周报，记得确认一下。"语气一丝不苟，信息量足，顺带洗清傅铖茜的嫌疑。150字以内。','生成工作笔记。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
+async function sceneMeetingBoard(btn){ btn.disabled=true;btn.textContent='📋'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('你是傅铖茜（@傅铖茜），行业组成员，工作一丝不苟。会议室白板上还有你之前写的会议纪要。请生成一段白板笔记，内容周报提交规范提醒。30字以内。','白板上写了什么？'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
+function buildElevatorScene(box){ G.yangRound=0; box.innerHTML+=`<p class="scene-desc">杨哥正在等电梯，看起来心事重重...</p><button class="interact-btn" id="btn-yang-talk" onclick="sceneElevatorTalk(this)" style="margin-bottom:12px;">💬 搭话</button><div id="scene-elevator-output"></div>`; }
+async function sceneElevatorTalk(btn){ btn.disabled=true;btn.textContent='💬'; const out=$('scene-elevator-output'); if(G.yangRound===0){ const l=createLoadingEl();out.appendChild(l); const text=await callLLM('你在扮演@杨徉，行业组成员，同事们叫你"杨哥"。现在正在电梯口等电梯，有同事（玩家）过来搭话问周报失踪的事。你回忆起桢桢离职当天在电梯里说过"手机操作文件好麻烦"，你当时没在意。说话风格沉稳、笑呵呵，不经意间透露出桢桢当天确实在用手机操作文件这个信息。注意：你是杨哥，不要叫对方"小杨"。不要直接说"是桢桢干的"，说话留有余地。100字以内。','电梯口搭话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; if(text){ G.yangRound=1; setTimeout(()=>{ $('scene-content').insertAdjacentHTML('beforeend',`<div class="chat-input-row" id="yang-chat-row"><input type="text" id="yang-chat-input" placeholder="输入你想问杨哥的话..." onkeydown="if(event.key==='Enter')sceneElevatorReply()" /><button class="interact-btn" onclick="sceneElevatorReply()">发送</button></div>`); },300); } } }
+async function sceneElevatorReply(){ const input=$('yang-chat-input'); if(!input)return; const msg=input.value.trim(); if(!msg)return; input.disabled=true; const out=$('scene-elevator-output'); out.innerHTML+=`<p style="color:var(--accent);margin-top:8px;"><strong>你：</strong>${msg}</p>`; const l=createLoadingEl();out.appendChild(l);out.scrollTop=out.scrollHeight; const text=await callLLM(`你在扮演@杨徉，行业组成员，同事们叫你"杨哥"。在电梯口聊天，对方（玩家，你的同事）问："${msg}"。你语气沉稳、笑呵呵地回复，不经意间透露桢桢离职当天在电梯里用过手机处理文件。注意：你是杨哥，不要叫对方"小杨"或其他名字。每次回复80字以内。`,''); removeLoadingEl(l); out.innerHTML+=`<p style="margin-top:8px;"><strong>杨哥：</strong>${text||'（无响应）'}</p>`;out.scrollTop=out.scrollHeight; recordClick('elevator'); input.disabled=false;input.value=''; G.yangRound++; if(G.yangRound>=3){ const row=document.getElementById('yang-chat-row');if(row)row.remove(); out.innerHTML+='<p style="color:#888;margin-top:8px;">杨哥的电梯到了，他挥了挥手走进电梯。</p>'; } }
+function buildFeishuScene(box){ box.innerHTML+=`<p class="scene-desc">系统后台，删除日志一览无余...</p><div class="feishu-log"><div class="log-entry"><span class="log-time">16:58</span> 薛桢桢 &nbsp; 查看文件：Q2周报汇总.xlsx</div><div class="log-entry"><span class="log-time">17:02</span> 薛桢桢 &nbsp; 移动文件：Q2周报汇总.xlsx → 共享盘/备份</div><div class="log-entry"><span class="log-time">21:15</span> 张路晴 &nbsp; 编辑文件：Q2周报汇总.xlsx &nbsp;<span style="color:#e85d26;font-size:.75rem;">⚠ 文件已无法找到</span></div><div class="log-entry"><span class="log-time">21:32</span> 傅铖茜 &nbsp; 查看文件：Q2周报汇总.xlsx &nbsp;<span style="color:#e85d26;font-size:.75rem;">⚠ 文件已无法找到</span></div><div class="log-entry"><span class="log-time">22:10</span> 柯晗 &nbsp;&nbsp;&nbsp; 查看文件：Q2周报汇总.xlsx &nbsp;<span style="color:#e85d26;font-size:.75rem;">⚠ 文件已无法找到</span></div><div class="log-entry highlight"><span class="log-time">22:47</span> ⚠ 薛桢桢（iPhone）删除文件：Q2周报汇总.xlsx &nbsp;｜ 备份文件大小：0KB</div><div class="log-entry"><span class="log-time">22:49</span> 唐子健 &nbsp; 查看文件：隐私合规检查表.xlsx</div></div>`; recordClick('feishu'); $('game-hint').textContent='关键线索已记录！'; }
+
+function toggleCluePanel(){ const p=$('clue-panel'); p.classList.toggle('collapsed'); p.querySelector('.toggle-btn').textContent=p.classList.contains('collapsed')?'▶':'◀'; }
+
+// ============ SCREEN 5: ACCUSATION ============
+function openAccusation(){ closeScene(); showScreen('accuse'); $('suspect-grid').innerHTML=CHARACTERS.filter(c=>c.id<=10).map(c=>`<div class="suspect-card" data-sid="${c.id}" onclick="pickSuspect(${c.id})"><img src="${c.img}" alt="${c.name}" onerror="this.style.display='none'"><div class="s-name">${c.name}</div></div>`).join(''); $('btn-accuse-confirm').disabled=true; }
+let pickedSuspect=null;
+function pickSuspect(id){ pickedSuspect=id; document.querySelectorAll('.suspect-card').forEach(c=>c.classList.remove('picked')); document.querySelector(`.suspect-card[data-sid="${id}"]`)?.classList.add('picked'); $('btn-accuse-confirm').disabled=false; }
+async function confirmAccusation(){ if(pickedSuspect===null)return; if(pickedSuspect===10){ showScreen('ending'); $('ending-confession').innerHTML='<span class="spinner"></span> 正在生成结局...'; $('ending-reactions').innerHTML=''; await generateEnding(); } else { toast('调查还需继续，再找找线索吧',2500); } }
+
+// ============ SCREEN 6: ENDING ============
+async function generateEnding(){
+  const confession=await callLLM('你在扮演@薛桢桢，刚离职的商分实习生。玩家查出了周报失踪是你造成的——你离职当天好心帮大家备份文件，却因为用手机操作不熟练，把原始文件删了，备份是空的，你自己完全不知道。请用第一人称写一段你得知真相后的回应：又震惊又想笑，连忙道歉，说自己真的是好意，顺带回忆一下那天手忙脚乱离职的场景。语气真实，带点自嘲，最后说一句舍不得大家的话。200字以内。','写认罪回应。');
+  $('ending-confession').innerHTML=confession?confession.replace(/\n/g,'<br>'):'薛桢桢：天哪是我干的？！对不起大家！！';
+  $('ending-reactions').innerHTML='<p style="margin-bottom:12px;color:#999;">全员反应加载中...</p>';
+  const otherChars=CHARACTERS.filter(c=>c.id<=10&&c.id!==10);
+  const reactions=await Promise.all(otherChars.map(c=>callLLM(`你是${c.at}，职位${c.title}，签名是"${c.sig}"。真相大白了——周报是离职实习生@薛桢桢 好心办坏事，用手机备份时误删的。请用符合你人设的独特语气写一句反应（20-50字）。每个人的反应要有差异化：有的原谅，有的吐槽，有的说早就猜到了，有的关心桢桢，有的追究备份流程。禁止所有角色都说同样的话。禁止使用"好家伙"开头。`,'发表评论。').then(text=>({name:c.name,at:c.at,text:text||'...'}))));
+  $('ending-reactions').innerHTML=reactions.map((r,i)=>`<div class="react-item" style="animation-delay:${i*0.15}s"><strong>${r.at}</strong>：${r.text}</div>`).join('');
+}
+function showLetter(){ showScreen('letter'); const c=G.charId!==null?CHARACTERS[G.charId]:{name:'侦探',at:'@侦探'}; $('letter-content').innerHTML=`<div class="dear">亲爱的 ${c.name}：</div><p>感谢你参与《周报失踪之谜》——商分上海·职场剧本杀。</p><p>在这个周四的夜晚，你化身为${c.at}，穿梭于工位、茶水间、会议室与电梯口之间，拼凑出真相的碎片。</p><p>周报虽然消失了，但故事里的每一个人……都真实地活在这些文字里。</p><p>职场有职场的规则，但更有职场的温度。</p><p>希望你喜欢这个故事。保持好奇心，下次再见。</p><div class="sign-off">—— 商分上海 · 全员敬上</div>`; }
+function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); }
+function resetGame(){ G.charId=null; G.clues={}; G.dialogues={}; G.yangRound=0; pickedSuspect=null; G.unlocked=new Set(['desk']); G.areaClicks={}; G._gameLoopRunning=false; buildCharGrid(); $('btn-char-confirm').disabled=true; showScreen('api'); updateClueUI(); }
+
+// ============================================================================
+//  GAME 1: CANVAS OFFICE ENGINE (unchanged)
+// ============================================================================
+const CW=800, CH=500;
+const PLAYER_W=18, PLAYER_H=28;
+const WALK_SPEED=140;
+const WALLS=[
+  {x:0,y:0,w:800,h:10},{x:0,y:490,w:800,h:10},{x:0,y:0,w:10,h:500},{x:790,y:0,w:10,h:500},
+  {x:10,y:238,w:300,h:12},{x:380,y:238,w:130,h:12},{x:560,y:238,w:230,h:12},
+  {x:10,y:280,w:130,h:12},{x:210,y:280,w:230,h:12},{x:500,y:280,w:290,h:12},
+  {x:415,y:10,w:10,h:230},{x:370,y:295,w:10,h:195},
+  {x:10,y:395,w:160,h:10},{x:220,y:395,w:140,h:10},
+];
+const AREAS={
+  desk:{x:24,y:24,w:379,h:204,color:'#BAC8D8',label:'工位'},
+  pantry:{x:437,y:24,w:341,h:204,color:'#B8D4B8',label:'茶水间'},
+  meeting:{x:24,y:304,w:334,h:81,color:'#D4C4A0',label:'会议室'},
+  elevator:{x:24,y:405,w:334,h:75,color:'#C4C4C4',label:'电梯口'},
+  feishu:{x:392,y:304,w:386,h:176,color:'rgba(232,93,38,0.1)',label:'飞书后台'},
+};
+const DOOR_BLOCKERS={
+  desk:{x:330,y:238,w:50,h:12},pantry:{x:520,y:238,w:40,h:12},
+  meeting:{x:160,y:280,w:50,h:12},elevator:{x:170,y:395,w:50,h:10},feishu:{x:440,y:280,w:60,h:12},
+};
+const NPCS=[
+  {cid:0,area:'desk',rx:55,ry:30,name:'柯晗'},{cid:5,area:'desk',rx:155,ry:30,name:'张路晴'},
+  {cid:8,area:'desk',rx:268,ry:30,name:'张艺骞'},{cid:2,area:'pantry',rx:55,ry:65,name:'徐储同'},
+  {cid:6,area:'pantry',rx:175,ry:90,name:'朱矜颖'},{cid:4,area:'meeting',rx:148,ry:18,name:'傅铖茜'},
+  {cid:3,area:'elevator',rx:170,ry:18,name:'杨徉'},
+];
+let player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
+let GAME_LOOP_ID=null, GAME_PAUSED=false, LAST_TIME=0;
+let DPAD_DIR=null;
+const FURNITURE_BLOCKS=[{x:38,y:155,w:80,h:58},{x:148,y:155,w:80,h:58},{x:258,y:155,w:72,h:58},{x:34,y:325,w:220,h:28}];
+
+function rectHit(a,b){ return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y; }
+function collidesWall(px,py){ const pr={x:px+3,y:py+2,w:PLAYER_W-6,h:PLAYER_H-4}; for(const w of WALLS) if(rectHit(pr,w)) return true; for(const [key,b] of Object.entries(DOOR_BLOCKERS)){ if(!isAreaUnlocked(key) && rectHit(pr,b)) return true; } for(const f of FURNITURE_BLOCKS) if(rectHit(pr,f)) return true; return false; }
+function getPlayerArea(px,py){ const cx=px+PLAYER_W/2, cy=py+PLAYER_H/2; for(const [key,a] of Object.entries(AREAS)){ if(cx>=a.x&&cx<=a.x+a.w&&cy>=a.y&&cy<=a.y+a.h) return key; } return null; }
+
+function drawFurniture(ctx, key, x, y, w, h, fallbackFn) { const img = ASSETS[key]; if (img && img.complete && img.naturalWidth > 0) { ctx.save(); ctx.imageSmoothingEnabled = false; ctx.drawImage(img, x, y, w, h); ctx.restore(); } else if (fallbackFn) { fallbackFn(); } }
+function drawPixelChar(ctx,x,y,color,legPhase,label,imageName,dir){
+  let imgKey; let flipX=false;
+  if(dir==='up'){ imgKey=`char_${imageName}_back`; } else if(dir==='left'){ imgKey=`char_${imageName}_left`; } else if(dir==='right'){ imgKey=`char_${imageName}_left`; flipX=true; } else { imgKey=`char_${imageName}_front`; }
+  let img=ASSETS[imgKey]; if(!img||!img.complete||!img.naturalWidth){ img=ASSETS[`char_${imageName}_front`]; }
+  const hasImg=img&&img.complete&&img.naturalWidth>0;
+  if(hasImg){ ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.fillRect(x+2,y+PLAYER_H-1,PLAYER_W-4,3); const drawH=72; const drawW=Math.round(img.naturalWidth/img.naturalHeight*drawH); const offsetX=x-Math.round((drawW-PLAYER_W)/2); const offsetY=y-drawH+PLAYER_H; const bob=player.moving?Math.abs(Math.sin(legPhase*Math.PI))*-3:0; ctx.save(); ctx.imageSmoothingEnabled=false; if(flipX){ ctx.translate(x+PLAYER_W/2,0); ctx.scale(-1,1); ctx.translate(-(x+PLAYER_W/2),0); } ctx.translate(0,Math.round(bob)); ctx.drawImage(img,offsetX,offsetY,drawW,drawH); ctx.restore(); }
+  else { ctx.fillStyle='rgba(0,0,0,0.15)'; ctx.fillRect(x+2,y+PLAYER_H-1,PLAYER_W-4,2); function darken(hex,pct){ const n=parseInt(hex.slice(1),16); const r=Math.round(((n>>16)&0xff)*(1-pct)); const g=Math.round(((n>>8)&0xff)*(1-pct)); const b=Math.round((n&0xff)*(1-pct)); return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0'); } const dc=darken(color,0.3); ctx.fillStyle=dc; ctx.fillRect(x+1,y,16,4); ctx.fillStyle=color; ctx.fillRect(x+2,y+1,14,6); ctx.fillRect(x+1,y+4,3,4); ctx.fillRect(x+14,y+4,3,4); ctx.fillStyle='#FDDCB5'; ctx.fillRect(x+3,y+6,12,9); ctx.fillStyle='#ffe8c8'; ctx.fillRect(x+4,y+7,4,3); ctx.fillStyle='rgba(180,120,70,0.35)'; ctx.fillRect(x+11,y+8,3,6); ctx.fillStyle=dc; ctx.fillRect(x+5,y+7,4,1); ctx.fillRect(x+10,y+7,4,1); ctx.fillStyle='#fff'; ctx.fillRect(x+5,y+8,4,3); ctx.fillRect(x+10,y+8,4,3); ctx.fillStyle='#1a1a1a'; ctx.fillRect(x+6,y+9,2,2); ctx.fillRect(x+11,y+9,2,2); ctx.fillStyle='#c4956a'; ctx.fillRect(x+7,y+13,4,1); ctx.fillStyle=color; ctx.fillRect(x+3,y+15,12,9); ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillRect(x+3,y+15,3,9); ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(x+12,y+15,3,9); ctx.fillStyle='#fff'; ctx.fillRect(x+7,y+15,4,3); ctx.fillStyle=color; ctx.fillRect(x+1,y+15,2,4); ctx.fillRect(x+15,y+15,2,4); ctx.fillStyle='#FDDCB5'; ctx.fillRect(x+1,y+16,2,6); ctx.fillRect(x+15,y+16,2,6); ctx.fillStyle='#1a1a2e'; const lo=Math.round(legPhase*4); ctx.fillRect(x+4-lo,y+21,4,7); ctx.fillRect(x+10+lo,y+21,4,7); ctx.fillStyle='#0a0a1a'; ctx.fillRect(x+4-lo,y+28,4,2); ctx.fillRect(x+10+lo,y+28,4,2); }
+  if(label){ ctx.save(); ctx.font='bold 9px "Noto Sans SC"'; ctx.textAlign='center'; ctx.fillStyle='#000'; [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dx,dy])=>{ctx.fillText(label,x+PLAYER_W/2+dx,y-9+dy);}); ctx.fillStyle='#fff'; ctx.fillText(label,x+PLAYER_W/2,y-9); ctx.restore(); }
+}
+function drawDesk(ctx,x,y){ const img=ASSETS['furn_工位']; if(img&&img.complete&&img.naturalWidth>0){ ctx.drawImage(img,x-8,y-8,80,60); } else { ctx.fillStyle='#6b7d8e'; ctx.fillRect(x,y+2,46,4); ctx.fillRect(x+4,y+6,6,20); ctx.fillRect(x+36,y+6,6,20); ctx.fillStyle='#4a5a6a'; ctx.fillRect(x+2,y+8,42,18); ctx.fillStyle='#8ec8e8'; ctx.fillRect(x+6,y+10,14,12); ctx.fillRect(x+28,y+10,14,12); ctx.fillStyle='#3a3a4a'; ctx.fillRect(x+22,y+10,4,12); ctx.fillStyle='#ddd'; ctx.fillRect(x+8,y+24,28,4); ctx.fillStyle='rgba(180,200,220,0.5)'; ctx.fillRect(x-8,y-8,4,36); } }
+function drawWaterCooler(ctx,x,y){ const img=ASSETS['furn_饮水机']; if(img&&img.complete&&img.naturalWidth>0){ ctx.drawImage(img,x,y,48,56); } else { ctx.fillStyle='#8ab88a'; ctx.fillRect(x+6,y+4,20,26); ctx.fillRect(x+2,y+30,28,8); ctx.fillStyle='#d4e8d4'; ctx.fillRect(x+8,y+8,16,18); ctx.fillStyle='#4a7a4a'; ctx.fillRect(x+12,y-2,8,6); ctx.fillStyle='#4a7a4a'; ctx.fillRect(x+10,y+34,4,4); ctx.fillStyle='#fff'; ctx.fillRect(x+2,y+40,5,4); ctx.fillRect(x+24,y+40,5,4); } }
+function drawTable(ctx,x,y,w){ const img=ASSETS['furn_会议室']; if(img&&img.complete&&img.naturalWidth>0){ ctx.drawImage(img,x,y,w,80); } else { ctx.fillStyle='#9b8365'; ctx.fillRect(x,y,w,8); ctx.fillStyle='#7b6345'; ctx.fillRect(x+4,y+8,4,14); ctx.fillRect(x+w-8,y+8,4,14); ctx.fillStyle='rgba(0,0,0,0.08)'; ctx.fillRect(x,y+4,w,4); } }
+function drawElevator(ctx,x,y){ const img=ASSETS['furn_电梯']; if(img&&img.complete&&img.naturalWidth>0){ ctx.drawImage(img,x,y,48,56); } else { ctx.fillStyle='#999'; ctx.fillRect(x,y,48,56); ctx.fillStyle='#bbb'; ctx.fillRect(x+3,y+3,19,50); ctx.fillRect(x+26,y+3,19,50); ctx.fillStyle='#E85D26'; ctx.fillRect(x+20,y+24,8,8); ctx.fillStyle='#777'; ctx.fillRect(x+1,y,2,56); } }
+function drawComputerTerminal(ctx,x,y,glowAlpha){ const img=ASSETS['furn_飞书后台']; if(img&&img.complete&&img.naturalWidth>0){ ctx.fillStyle=`rgba(232,93,38,${0.15+(glowAlpha||0)*0.2})`; ctx.fillRect(x-8,y-28,52,44); ctx.drawImage(img,x,y-20,36,36); } else { ctx.fillStyle='#3a3a4a'; ctx.fillRect(x,y-20,36,24); ctx.fillStyle='#1a1a2e'; ctx.fillRect(x+3,y-17,30,18); ctx.fillStyle='#00ff88'; ctx.fillRect(x+6,y-14,6,4); ctx.fillRect(x+14,y-14,6,4); ctx.fillRect(x+6,y-8,16,2); ctx.fillStyle='#555'; ctx.fillRect(x+14,y+4,8,6); ctx.fillRect(x+8,y+10,20,3); ctx.fillStyle='rgba(232,93,38,0.25)'; ctx.fillRect(x+3,y-17,30,18); } }
+
+function drawMap(ctx,glowAlpha){
+  ctx.fillStyle='#E8D5A3'; ctx.fillRect(0,0,CW,CH);
+  ctx.strokeStyle='rgba(0,0,0,0.04)'; ctx.lineWidth=1;
+  for(let y=0;y<CH;y+=20){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(CW,y);ctx.stroke(); }
+  for(let x=0;x<CW;x+=20){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,CH);ctx.stroke(); }
+  const areaColors={desk:'#EDE0CC',pantry:'#D4E0D0',meeting:'#DDD0B8',elevator:'#D0CFCC',feishu:'#2A2A35'};
+  for(const [key,a] of Object.entries(AREAS)){ ctx.fillStyle=areaColors[key]||a.color; ctx.fillRect(a.x,a.y,a.w,a.h); ctx.fillStyle=key==='feishu'?'rgba(255,255,255,0.5)':'rgba(44,24,16,0.45)'; ctx.font='12px "Noto Sans SC"'; ctx.textAlign='center'; ctx.fillText(a.label,a.x+a.w/2,a.y+a.h-6); }
+  for(const w of WALLS){ ctx.fillStyle='#3a2820'; ctx.fillRect(w.x,w.y,w.w,w.h); ctx.fillStyle='#2C1810'; ctx.fillRect(w.x,w.y,w.w-2,w.h-2); ctx.fillStyle='#4a3830'; ctx.fillRect(w.x+1,w.y+1,3,w.h-3); }
+  for(const [key,b] of Object.entries(DOOR_BLOCKERS)){ ctx.fillStyle='#c8b898'; ctx.fillRect(b.x,b.y,b.w,b.h); if(!isAreaUnlocked(key)){ ctx.fillStyle='rgba(44,24,16,0.5)'; ctx.fillRect(b.x,b.y,b.w,b.h); } }
+  for(const [key,a] of Object.entries(AREAS)){ const active=G._currentArea===key&&isAreaUnlocked(key); ctx.strokeStyle=active?`rgba(232,93,38,${0.7+glowAlpha*0.3})`:`rgba(180,160,140,0.5)`; ctx.lineWidth=active?3:1.5; ctx.setLineDash(active?[]:[5,5]); ctx.strokeRect(a.x,a.y,a.w,a.h); ctx.setLineDash([]); }
+  drawFurniture(ctx,'furn_饮水机',447,34,55,95,()=>drawWaterCooler(ctx,447,34)); drawFurniture(ctx,'furn_零食柜',710,28,62,105,null); drawFurniture(ctx,'furn_茶水间',530,130,100,80,null);
+  drawFurniture(ctx,'furn_电梯',26,415,52,58,()=>drawElevator(ctx,26,415));
+  ctx.fillStyle=`rgba(232,93,38,${0.15+glowAlpha*0.25})`; ctx.fillRect(392,304,386,176); ctx.save(); ctx.shadowColor='#E85D26'; ctx.shadowBlur=12+glowAlpha*8;
+  (function(){ const img=ASSETS['furn_飞书后台']; if(img&&img.complete&&img.naturalWidth>0){ const h=100; const w=Math.round(img.naturalWidth/img.naturalHeight*h); const fx=392+(386-w)/2, fy=304+(176-h)/2; ctx.save(); ctx.imageSmoothingEnabled=false; ctx.drawImage(img,Math.round(fx),Math.round(fy),w,h); ctx.restore(); } else { drawComputerTerminal(ctx,505,332,glowAlpha); } })();
+  ctx.restore();
+  for(const [key,a] of Object.entries(AREAS)){ if(!isAreaUnlocked(key)){ ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fillRect(a.x,a.y,a.w,a.h); ctx.fillStyle='#fff'; ctx.font='bold 28px "Noto Sans SC"'; ctx.textAlign='center'; ctx.fillText('🔒',a.x+a.w/2,a.y+a.h/2+10); } }
+  for(const npc of NPCS){ if(npc.cid===G.charId) continue; const a=AREAS[npc.area],c=CHARACTERS[npc.cid]; drawPixelChar(ctx,a.x+npc.rx,a.y+npc.ry,c.color,0,c.at,npc.name); }
+  if(G.charId!==null){ const c=CHARACTERS[G.charId]; const phase=player.moving?Math.sin(player.walkTime/250*Math.PI):0; drawPixelChar(ctx,player.x,player.y,c.color,phase,c.at,c.name,player.dir); }
+  drawFurniture(ctx,'furn_工位1',38,148,80,65,()=>drawDesk(ctx,38,148)); drawFurniture(ctx,'furn_工位2',148,148,80,65,()=>drawDesk(ctx,148,148)); drawFurniture(ctx,'furn_工位3',258,148,72,65,()=>drawDesk(ctx,258,148));
+  drawTable(ctx,34,320,220);
+}
+
+function gameLoop(ts){
+  if(!LAST_TIME) LAST_TIME=ts; const dt=Math.min((ts-LAST_TIME)/1000,0.05); LAST_TIME=ts;
+  if(!GAME_PAUSED){
+    let mx=0,my=0;
+    if(keys['ArrowUp']||keys['w']||keys['W']){ my=-1;player.dir='up'; } else if(keys['ArrowDown']||keys['s']||keys['S']){ my=1;player.dir='down'; }
+    if(keys['ArrowLeft']||keys['a']||keys['A']){ mx=-1;player.dir='left'; } else if(keys['ArrowRight']||keys['d']||keys['D']){ mx=1;player.dir='right'; }
+    if(DPAD_DIR){ switch(DPAD_DIR){ case'up':my=-1;player.dir='up';break; case'down':my=1;player.dir='down';break; case'left':mx=-1;player.dir='left';break; case'right':mx=1;player.dir='right';break; } }
+    if(mx!==0&&my!==0){ mx*=0.707;my*=0.707; }
+    if(mx!==0||my!==0){ const step=WALK_SPEED*dt; const nx=player.x+mx*step, ny=player.y+my*step; if(!collidesWall(nx,player.y)) player.x=nx; if(!collidesWall(player.x,ny)) player.y=ny; player.moving=true; player.walkTime+=dt*1000; player.x=Math.max(12,Math.min(CW-PLAYER_W-12,player.x)); player.y=Math.max(12,Math.min(CH-PLAYER_H-12,player.y)); } else { player.moving=false; }
+    const area=getPlayerArea(player.x,player.y); if(area!==G._currentArea){ G._currentArea=area; const hint=$('canvas-hint'); if(area&&isAreaUnlocked(area)){ hint.textContent='按 E 键 / 点击此处 进行调查'; hint.classList.add('show'); } else if(area&&!isAreaUnlocked(area)){ hint.textContent='🔒 此区域尚未解锁'; hint.classList.add('show'); } else { hint.classList.remove('show'); } }
+  }
+  const canvas=$('game-canvas'); const ctx=canvas.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const t=Date.now()/1000; const glowAlpha=0.35+0.25*Math.sin(t*2.5); drawMap(ctx,glowAlpha);
+  GAME_LOOP_ID=requestAnimationFrame(gameLoop);
+}
+
+function initGame1Canvas(){
+  if(GAME_LOOP_ID){ cancelAnimationFrame(GAME_LOOP_ID);GAME_LOOP_ID=null; }
+  GAME_PAUSED=false;LAST_TIME=0; G._currentArea=null; $('canvas-hint').classList.remove('show');
+  player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
+  $('dpad-container').style.display=window.innerWidth<=768?'flex':'none';
+  const canvas=$('game-canvas'); const dpr=window.devicePixelRatio||1;
+  canvas.width=CW*dpr; canvas.height=CH*dpr; canvas.style.width=CW+'px'; canvas.style.height=CH+'px'; canvas.style.imageRendering='pixelated';
+  const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.imageSmoothingEnabled=false;
+  GAME_LOOP_ID=requestAnimationFrame(gameLoop);
+}
+function pauseGameLoop(){ GAME_PAUSED=true; }
+function resumeGameLoop(){ GAME_PAUSED=false;DPAD_DIR=null;player.moving=false;player.walkTime=0;G._currentArea=null;$('canvas-hint').classList.remove('show'); }
+
+const keys={};
+document.addEventListener('keydown',e=>{ if(G.screen!=='main'||GAME_PAUSED)return; keys[e.key]=true; if((e.key==='e'||e.key==='E')&&G._currentArea&&isAreaUnlocked(G._currentArea)) triggerScene(); if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D'].includes(e.key)) e.preventDefault(); });
+document.addEventListener('keyup',e=>{ keys[e.key]=false; });
+
+function dpadDown(dir){ DPAD_DIR=dir; }
+function dpadUp(){ DPAD_DIR=null; }
+
+// ============================================================================
+//  GAME 2: GOLD MINER ENGINE
+// ============================================================================
+const MCW=700, MCH=500;
+const minerPivotX=MCW/2, minerPivotY=90;
+let MS={}, minerRAF=null;
+
+function showMinerGuide(){
+  const speech=document.querySelector('.miner-guide-speech');
+  const figure=document.querySelector('.miner-guide-figure');
+  const fullOverlay=$('miner-guide-overlay');
+  if(!fullOverlay) return;
+  // Reset close button to normal behavior
+  const cb=fullOverlay.querySelector('span[onclick]'); if(cb) cb.setAttribute('onclick','hideMinerGuide()');
+  $('miner-guide-text').innerHTML='攒够<b>50分</b>，解锁下一关！<br><br>🟡 <b>金块</b> = +10分<br>🔵 <b>飞书</b> = -10分（沉重，拉回极慢）<br>🎁 <b>盲盒</b> = 随机惊喜：<br>&nbsp;&nbsp;&nbsp;50%开出大金块(+20分) / 50%开出99+飞书(-20分)<br><br><b>空格键</b>或<b>点击屏幕</b>发射钩爪<br>祝你好运！';
+  fullOverlay.style.display='flex';
+  requestAnimationFrame(()=>{
+    figure.style.transform='translateY(0)';
+    setTimeout(()=>{ speech.style.opacity='1'; speech.style.transform='translateY(0)'; },400);
+  });
+}
+function hideMinerGuide(){
+  const speech=document.querySelector('.miner-guide-speech');
+  const figure=document.querySelector('.miner-guide-figure');
+  const fullOverlay=$('miner-guide-overlay');
+  if(!fullOverlay) return;
+  speech.style.opacity='0'; speech.style.transform='translateY(30px)';
+  figure.style.transform='translateY(200px)';
+  setTimeout(()=>{ fullOverlay.style.display='none'; initMinerGame(); },600);
+}
+function initMinerGame(){
+  const c=G.charId!==null?CHARACTERS[G.charId]:{name:'miner'};
+  MS={score:0,target:50,timeLeft:60,phase:'swing',hookAngle:0,ropeLen:40,maxRope:MCH-120,
+    hookSpeed:450,retractBase:180,objects:[],swingDir:1,swingSpeed:1.8,
+    charColor:c.color,charName:c.name,toastQueue:[]
+  };
+  $('miner-score').textContent='💰 0 / 50'; $('miner-timer').textContent='⏱ 60s'; $('miner-timer').classList.remove('urgent');
+  $('miner-hint').style.display='block'; $('miner-back-btn').style.display='none'; $('miner-retry-btn').style.display='none';
+  spawnMinerObjects();
+  if(minerRAF) cancelAnimationFrame(minerRAF);
+  minerRAF=requestAnimationFrame(minerLoop);
+}
+function spawnMinerObjects(){
+  MS.objects=[];
+  for(let i=0;i<8;i++){
+    const t=Math.random(); let type,value,weight,label;
+    if(t<0.45){ type='gold';value=10;weight=1.2;label='金块'; }
+    else if(t<0.7){ type='feishu';value=-10;weight=3.5;label='飞书'; }
+    else { type='box';weight=0.6;label='盲盒'; }
+    MS.objects.push({type,value,weight,label,x:40+Math.random()*(MCW-80),y:200+Math.random()*260,w:type==='gold'?56:52,h:type==='gold'?56:52,collected:false});
+  }
+}
+function drawMinerChar(ctx,cx,cy){
+  const s=1.8;
+  ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.fillRect(cx-10*s,cy+14*s,20*s,3);
+  ctx.fillStyle='#FFD700'; ctx.fillRect(cx-9*s,cy-10*s,18*s,5*s); ctx.fillRect(cx-7*s,cy-14*s,14*s,6*s);
+  ctx.fillStyle='#FFFACD'; ctx.fillRect(cx-2*s,cy-15*s,4*s,3*s);
+  ctx.fillStyle='rgba(255,255,200,0.5)'; ctx.fillRect(cx-5*s,cy-18*s,10*s,4*s);
+  ctx.fillStyle='#FDDCB5'; ctx.fillRect(cx-6*s,cy-9*s,12*s,9*s); ctx.fillStyle='#ffe8c8'; ctx.fillRect(cx-4*s,cy-8*s,4*s,3*s);
+  ctx.fillStyle='#2C1810'; ctx.fillRect(cx-4*s,cy-6*s,2*s,2*s); ctx.fillRect(cx+2*s,cy-6*s,2*s,2*s);
+  ctx.fillStyle='#c4956a'; ctx.fillRect(cx-2*s,cy-2*s,4*s,1*s);
+  ctx.fillStyle='#3A5A8C'; ctx.fillRect(cx-7*s,cy,14*s,10*s); ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fillRect(cx-7*s,cy,4*s,10*s);
+  ctx.fillStyle='#fff'; ctx.fillRect(cx-2*s,cy,4*s,4*s);
+  ctx.fillStyle='#8B6914'; ctx.fillRect(cx-7*s,cy+8*s,14*s,2*s); ctx.fillStyle='#FFD700'; ctx.fillRect(cx-2*s,cy+8*s,4*s,2*s);
+  ctx.fillStyle='#3A5A8C'; ctx.fillRect(cx-11*s,cy+1*s,4*s,7*s); ctx.fillRect(cx+7*s,cy+1*s,4*s,7*s);
+  ctx.fillStyle='#FDDCB5'; ctx.fillRect(cx-11*s,cy+7*s,4*s,3*s); ctx.fillRect(cx+7*s,cy+7*s,4*s,3*s);
+  ctx.fillStyle='#2a3d6b'; ctx.fillRect(cx-6*s,cy+10*s,5*s,8*s); ctx.fillRect(cx+1*s,cy+10*s,5*s,8*s);
+  ctx.fillStyle='#2C1810'; ctx.fillRect(cx-7*s,cy+17*s,6*s,2*s); ctx.fillRect(cx+1*s,cy+17*s,6*s,2*s);
+  ctx.strokeStyle='#8B6914'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.moveTo(cx+10*s,cy+5*s); ctx.lineTo(cx+18*s,cy-6*s); ctx.stroke();
+  ctx.fillStyle='#A0A0A0'; ctx.fillRect(cx+16*s,cy-9*s,6*s,3*s); ctx.fillStyle='#C8C8C8'; ctx.fillRect(cx+17*s,cy-8*s,3*s,1*s);
+}
+function drawMinerFrame(){
+  const canvas=$('miner-canvas'); const ctx=canvas.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const splitY=minerPivotY+20;
+  // Top - ground background
+  const topBg=ASSETS['miner_bg_top'];
+  if(topBg&&topBg.complete&&topBg.naturalWidth>0){ ctx.save(); ctx.beginPath(); ctx.rect(0,0,MCW,splitY); ctx.clip(); ctx.drawImage(topBg,0,0,MCW,splitY); ctx.restore(); }
+  else { const skyGrad=ctx.createLinearGradient(0,0,0,splitY); skyGrad.addColorStop(0,'#87CEEB'); skyGrad.addColorStop(0.7,'#B0E0B0'); skyGrad.addColorStop(1,'#5a8a3a'); ctx.fillStyle=skyGrad; ctx.fillRect(0,0,MCW,splitY); }
+  // Ground layer
+  const groundGrad=ctx.createLinearGradient(0,splitY,0,splitY+18); groundGrad.addColorStop(0,'#6b4c1e'); groundGrad.addColorStop(1,'#3d2808'); ctx.fillStyle=groundGrad; ctx.fillRect(0,splitY,MCW,18);
+  ctx.fillStyle='#4a8a2a'; ctx.fillRect(0,splitY-4,MCW,6); ctx.fillStyle='#3a7a1a'; ctx.fillRect(0,splitY-2,MCW,3);
+  // Bottom - underground background
+  const botBg=ASSETS['miner_bg_bottom']; const botY=splitY+18;
+  if(botBg&&botBg.complete&&botBg.naturalWidth>0){ ctx.save(); ctx.beginPath(); ctx.rect(0,botY,MCW,MCH-botY); ctx.clip(); ctx.drawImage(botBg,0,botY,MCW,MCH-botY); ctx.restore(); }
+  else { const dirtGrad=ctx.createLinearGradient(0,botY,0,MCH); dirtGrad.addColorStop(0,'#2d1a08'); dirtGrad.addColorStop(0.4,'#1e1005'); dirtGrad.addColorStop(1,'#0f0803'); ctx.fillStyle=dirtGrad; ctx.fillRect(0,botY,MCW,MCH-botY);
+    ctx.strokeStyle='rgba(80,50,20,0.4)'; ctx.lineWidth=1; for(let i=0;i<6;i++){ const lx=60+i*110+Math.random()*20; ctx.beginPath(); ctx.moveTo(lx,botY); ctx.lineTo(lx+20,botY+80); ctx.lineTo(lx-10,botY+160); ctx.lineTo(lx+15,MCH); ctx.stroke(); }
+    ctx.fillStyle='rgba(60,40,20,0.5)'; for(let i=0;i<12;i++){ ctx.fillRect(30+i*55,botY+20+i*22,12+i%3*4,8+i%2*4); } }
+  // Miner
+  drawMinerChar(ctx,minerPivotX,minerPivotY-26);
+  // Objects
+  for(const obj of MS.objects){
+    if(obj.collected) continue;
+    let imgKey; if(obj.type==='gold') imgKey='miner_gold'; else if(obj.type==='feishu') imgKey='miner_feishu'; else imgKey='miner_box';
+    const img=ASSETS[imgKey];
+    if(img&&img.complete&&img.naturalWidth>0){
+      ctx.save();
+      if(obj.type==='gold'){ ctx.shadowColor='rgba(255,215,0,0.6)'; ctx.shadowBlur=8; }
+      else if(obj.type==='feishu'){ ctx.shadowColor='rgba(74,144,217,0.5)'; ctx.shadowBlur=6; }
+      const scale=Math.min(obj.w/img.naturalWidth, obj.h/img.naturalHeight);
+      const dw=Math.round(img.naturalWidth*scale); const dh=Math.round(img.naturalHeight*scale);
+      ctx.drawImage(img, Math.round(obj.x+(obj.w-dw)/2), Math.round(obj.y+(obj.h-dh)/2), dw, dh);
+      ctx.restore();
+    } else { const fc={gold:'#FFD700',feishu:'#4A90D9',box:'#E85D26'}; ctx.fillStyle=fc[obj.type]; ctx.fillRect(obj.x,obj.y,obj.w,obj.h); }
+  }
+  // Rope + hook
+  const hx=minerPivotX+Math.sin(MS.hookAngle)*MS.ropeLen; const hy=minerPivotY+Math.cos(MS.hookAngle)*MS.ropeLen;
+  ctx.strokeStyle='#8B6914'; ctx.lineWidth=2.5; ctx.setLineDash([]); ctx.beginPath(); ctx.moveTo(minerPivotX,minerPivotY); ctx.lineTo(hx,hy); ctx.stroke();
+  ctx.fillStyle='#888'; ctx.fillRect(hx-5,hy-5,10,10); ctx.fillStyle='#aaa'; ctx.fillRect(hx-3,hy-3,6,6); ctx.fillStyle='rgba(255,255,255,0.4)'; ctx.fillRect(hx-2,hy-2,3,2);
+}
+function minerLoop(ts){
+  if(!MS._last) MS._last=ts; const dt=Math.min((ts-MS._last)/1000,0.05); MS._last=ts;
+  MS.timeLeft-=dt; if(MS.timeLeft<=0){ MS.timeLeft=0; endMinerRound(false); return; }
+  $('miner-timer').textContent=`⏱ ${Math.ceil(MS.timeLeft)}s`; if(MS.timeLeft<15) $('miner-timer').classList.add('urgent');
+  $('miner-score').textContent=`💰 ${MS.score} / ${MS.target}`;
+
+  if(MS.phase==='swing'){ MS.hookAngle+=MS.swingDir*MS.swingSpeed*dt; if(Math.abs(MS.hookAngle)>1.0){ MS.swingDir*=-1; MS.hookAngle=Math.sign(MS.hookAngle)*1.0; } }
+  else if(MS.phase==='shoot'){
+    MS.ropeLen+=MS.hookSpeed*dt; const hx=minerPivotX+Math.sin(MS.hookAngle)*MS.ropeLen; const hy=minerPivotY+Math.cos(MS.hookAngle)*MS.ropeLen;
+    if(hy>MCH-20||hx<10||hx>MCW-10){ MS.phase='retract'; MS.retractSpeed=MS.retractBase; }
+    for(const obj of MS.objects){ if(obj.collected) continue; if(hx>obj.x&&hx<obj.x+obj.w&&hy>obj.y&&hy<obj.y+obj.h){ obj.collected=true; MS.hookObj=obj; MS.phase='retract'; MS.retractSpeed=MS.retractBase/obj.weight; break; } }
+  }
+  else if(MS.phase==='retract'){
+    MS.ropeLen-=MS.retractSpeed*dt;
+    if(MS.ropeLen<=40){ MS.ropeLen=40;
+      if(MS.hookObj){
+        const obj=MS.hookObj;
+        if(obj.type==='box'){
+          // Random: +20 big gold or -20 feishu flood
+          const lucky=Math.random()<0.5;
+          obj.value=lucky?20:-20;
+          obj.label=lucky?'大金块':'99+飞书';
+          obj.boxResult=lucky?'gold':'feishu';
+        }
+        MS.score+=obj.value;
+        const pts=obj.value>=0?'+'+obj.value:obj.value;
+        toast(`🎣 获得「${obj.label}」！ ${pts} 分`,2500);
+        MS.hookObj=null; spawnMinerObjects();
+      }
+      MS.phase='swing';
+      if(MS.score>=MS.target) endMinerRound(true);
+      if(MS.score>=MS.target) return;
+    }
+  }
+  drawMinerFrame();
+  if(G.screen==='miner') minerRAF=requestAnimationFrame(minerLoop);
+}
+function shootMinerHook(){ if(MS.phase!=='swing'||!MS.timeLeft) return; MS.phase='shoot'; MS.ropeLen=40; $('miner-hint').style.display='none'; }
+function showMinerVictory(){
+  const overlay=$('miner-guide-overlay');
+  const speech=document.querySelector('#screen-miner .miner-guide-speech');
+  const figure=document.querySelector('#screen-miner .miner-guide-figure');
+  $('miner-guide-text').innerHTML=`🎉 <b>通关！</b><br><br>${MS.score} 分到手，打工人大获全胜！<br><br>矿场已经被你征服了，<br>赶快前往下一关吧！`;
+  overlay.style.display='flex';
+  speech.style.opacity='0'; speech.style.transform='translateY(30px)';
+  figure.style.transform='translateY(200px)';
+  requestAnimationFrame(()=>{
+    figure.style.transform='translateY(0)';
+    setTimeout(()=>{ speech.style.opacity='1'; speech.style.transform='translateY(0)'; },400);
+  });
+  // Repurpose close button to return to hub
+  const closeBtn=overlay.querySelector('span[onclick]');
+  if(closeBtn){ closeBtn.setAttribute('onclick','endMinerGame()'); closeBtn.title='返回游戏大厅'; }
+}
+function hideMinerGuide(){
+  const speech=document.querySelector('#screen-miner .miner-guide-speech');
+  const figure=document.querySelector('#screen-miner .miner-guide-figure');
+  const overlay=$('miner-guide-overlay');
+  if(!overlay) return;
+  speech.style.opacity='0'; speech.style.transform='translateY(30px)';
+  figure.style.transform='translateY(200px)';
+  setTimeout(()=>{ overlay.style.display='none'; initMinerGame(); },600);
+}
+function endMinerRound(won){
+  if(minerRAF){ cancelAnimationFrame(minerRAF); minerRAF=null; }
+  $('miner-hint').style.display='none';
+  if(won){
+    G.unlockedGames = Math.max(G.unlockedGames, 3); updateHubCards();
+    showMinerVictory();
+  } else {
+    toast('⏰ 时间耗尽！最终得分：' + MS.score, 3000);
+    $('miner-retry-btn').style.display='inline-block';
+  }
+}
+function restartMiner(){ initMinerGame(); }
+function endMinerGame(){ showScreen('hub'); }
+function startMinerGame(){ showScreen('miner'); showMinerGuide(); }
+document.addEventListener('keydown',e=>{ if(G.screen!=='miner') return; if(e.key===' '||e.code==='Space'){ e.preventDefault(); shootMinerHook(); } });
+document.addEventListener('click',e=>{ if(G.screen!=='miner') return; if(e.target.closest('.btn')) return; if($('miner-guide-overlay').style.display==='flex') return; shootMinerHook(); });
+
+// ============================================================================
+//  GAME 3: BATI PERSONALITY TEST
+// ============================================================================
+const BATI_QUESTIONS = [
+  {text:"早上踩点上班发现电梯人满为患！你的选择是：",options:[
+    {text:"A. 今天就是变成肉饼我也要挤上去",dim:'T'},{text:"B. 大喊一声着火了，让电梯里的人都跑出来，自己享用超大电梯空间",dim:'A'},{text:"C. 电梯是给弱者用的，我从来都走楼梯的",dim:'I'},{text:"D. 抱歉，本人从来不卡点上班",dim:'B'},]},
+  {text:"坐到工位后的第一件事是：",options:[
+    {text:"A. 老天保佑今天没人找我干活，让我看看还有几个小时下班",dim:'T'},{text:"B. 先去茶水间自制一顿神秘早餐再说",dim:'A'},{text:"C. 好饿啊，今天中午吃啥",dim:'I'},{text:"D. 打开飞书，清理消息的同时安排今日工作计划",dim:'B'},]},
+  {text:"沉浸式赶作业到一半，突然被拉进一个紧急会议，你的心情是：",options:[
+    {text:"A. 不影响，边开会边赶作业是我的日常罢了",dim:'T'},{text:"B. 直接在会议大胆开麦，询问谁想承接自己的作业",dim:'A'},{text:"C. 我的法克呀，这下我的作业绝对赶不完了",dim:'I'},{text:"D. 什么是紧急会议，我的人生每一秒都是现场直播",dim:'B'},]},
+  {text:"中午吃饭：难吃但人少的自助 VS 好吃但人爆满的档口，你选：",options:[
+    {text:"A. 选人少的！赶紧吃完还要回去赶作业",dim:'T'},{text:"B. 人这么多肯定好吃，俺老猪今天吃定档口了",dim:'A'},{text:"C. 骚瑞我只吃订的餐",dim:'I'},{text:"D. 为了工作我可以不吃不喝，再来十个文档我顶得住！",dim:'B'},]},
+  {text:"新人入群，你的第一反应是：",options:[
+    {text:"A. 爆个照爆个照！",dim:'T'},{text:"B. 询问他是哪里人，如果是新疆人，问他会不会扭脖子",dim:'A'},{text:"C. 一键跟随大家热情欢迎",dim:'I'},{text:"D. 你们还在群里欢迎的时候，我已经把人接上来了！",dim:'B'},]},
+  {text:"发现要合作的同学完全听不懂你在讲什么，你的心理活动是：",options:[
+    {text:"A. 唉",dim:'T'},{text:"B. 没事，反正我自己也不知道自己在讲什么",dim:'A'},{text:"C. 我要退货，给我换一个同学",dim:'I'},{text:"D. 不需要合作同学，我一个人就能扛着项目前进",dim:'B'},]},
+  {text:"如果今天就是世界末日，走的时候必须带走一件办公室物品，你会带：",options:[
+    {text:"A. 我的苹果电脑",dim:'T'},{text:"B. 实习生算物品不",dim:'A'},{text:"C. 工卡",dim:'I'},{text:"D. 不走了，我和周报共存亡",dim:'B'},]},
+  {text:"如果让你选择团建地点，你会选：",options:[
+    {text:"A. 自己的base地，老胳膊老腿懒得动弹",dim:'T'},{text:"B. 火星有没有搞头",dim:'A'},{text:"C. 必须离我的base地越远越好，不然岂不是白团建了",dim:'I'},{text:"D. 我从来不团建",dim:'B'},]},
+  {text:"你觉得自己会被AI替代吗？",options:[
+    {text:"A. 我感觉已经被替代了",dim:'T'},{text:"B. 求求你了AI大人统治世界的时候放我一条生路",dim:'A'},{text:"C. 啥是AI啊？没人通知我啊？",dim:'I'},{text:"D. 我已肉身成圣，现在我比agent还agent",dim:'B'},]},
+  {text:"你对薛师傅的评价是：",isFinal:true,options:[
+    {text:"A. 非常好！薛师傅我要永远关注你的抖音！",dim:'T',correct:true},{text:"B. 还不错",dim:'A',correct:false},{text:"C. 不太熟",dim:'I',correct:false},{text:"D. 拉完了",dim:'B',correct:false},]},
+];
+
+function calcBATIType(scores){
+  const bH=scores.B>=5, aH=scores.A>=5, tH=scores.T>=5, iH=scores.I>=5;
+  const key=`${bH?1:0}${aH?1:0}${tH?1:0}${iH?1:0}`;
+  return {'1111':{code:'PHDX',name:'全能打工皇帝',desc:'Professional Hard-core Drifter eXtraordinary。既能卷又能摸还带点抽象，堪称职场薛定谔。领导问你在干嘛你说"在忙"，实际上你自己也不知道。',color:'#E85D26'},
+    '1110':{code:'TALK',name:'商务抽象播报机',desc:'Talking A Lot, Known-for-nothing。开会永远第一个发言，结束永远没人记得你说了什么。PPT做了50页，每页只有一个问号。',color:'#D4A017'},
+    '1101':{code:'BOSS',name:'务实商务战神',desc:'Business-Oriented Straight-Shooting Sprinter。脚踏实地往前冲，项目就是我的命，OKR是我的血液。唯一的弱点是不知道怎么摸鱼。',color:'#2E8B57'},
+    '1100':{code:'WIFI',name:'商务信号时有时无',desc:'Working Intermittently, Fading In-and-out。每天都在线但不知道在干嘛，像公司wifi一样——存在感强，稳定性差。',color:'#6A5ACD'},
+    '1011':{code:'RUSH',name:'高速冲刺摸鱼侠',desc:'Running Until Somehow Here。表面在摸鱼，实际在偷偷冲。被发现摸鱼时已经交了三份作业了。',color:'#20B2AA'},
+    '1010':{code:'SLOW',name:'精致佛系打工人',desc:'Sophisticated Laid-back Office Wanderer。不急不躁，慢慢来，反正最后都是我的功劳。每天下班最早，绩效最好。',color:'#BC8F5F'},
+    '1001':{code:'FIRE',name:'务实冲锋队长',desc:'Focused Intense Results-driven Engine。话不多，但每句话都是结论。开口前沉默5秒，开口后全场记笔记。',color:'#FF4500'},
+    '1000':{code:'CALM',name:'低调实力派',desc:'Consistently Achieving with Low Momentum。什么都懂，什么都不说，每天喝茶等下班，但项目结果永远第一名。',color:'#4682B4'},
+    '0111':{code:'VIBE',name:'抽象冲劲野生员工',desc:'Vibing Intensely Beyond Expectations。充满干劲但方向不明，像陀螺一样转。有激情没地图，但总能到达终点。',color:'#FF6347'},
+    '0110':{code:'DAZE',name:'抽象摸鱼文学家',desc:'Drifting Around in a Zen Existence。开会全程在写小说，偶尔抬头说一句话让全场爆笑。你的飞书状态永远是"思考中"。',color:'#9370DB'},
+    '0101':{code:'ZOOM',name:'抽象冲刺小钢炮',desc:'Zooming Out Of Meeting-rooms。开完会立刻冲出去干活，没人知道你在会议室里想了什么，但结果总是对的。',color:'#3CB371'},
+    '0100':{code:'POET',name:'稳健佛系哲学家',desc:'Philosophizing Over Every Task。每个需求背后都有一个哲学问题，每个问题背后都有一杯茶。不急，这个宇宙反正也快没了。',color:'#87CEEB'},
+    '0011':{code:'WAVE',name:'摸鱼冲劲双修侠',desc:'Working And Vibing Equally。摸鱼的时候在想冲，冲的时候在想摸鱼，永远处于叠加态。量子打工人。',color:'#FF8C00'},
+    '0010':{code:'REST',name:'最强打工化石',desc:'Resting, Existing, Surviving Tirelessly。岁月静好，从不内卷，每天都是退休彩排。资历即是资本，存在即是贡献。',color:'#A0522D'},
+    '0001':{code:'GRIT',name:'默默无闻冲关侠',desc:'Going Really Intensely, Talking-less。没有存在感，但总是第一个交作业。开会从不说话，但邮件最快，交付最准。',color:'#2F4F4F'},
+    '0000':{code:'ICON',name:'商分吉祥物',desc:'Inexplicably Cherished by Office Neighbors。所有人都认识你，没人知道你在干嘛。快乐是你的超能力，存在是你的价值。',color:'#DA70D6'},
+  }[key];
+}
+
+let batiState={current:0,scores:{B:0,A:0,T:0,I:0},answers:[]};
+
+function openBATIGame(){ showScreen('bati'); startBATI(); }
+function startBATI(){ batiState={current:0,scores:{B:0,A:0,T:0,I:0},answers:[]}; renderBATI(); }
+function renderBATI(){
+  const q=BATI_QUESTIONS[batiState.current]; const pct=(batiState.current/BATI_QUESTIONS.length)*100;
+  $('screen-bati').innerHTML=`<div class="bati-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <span style="font-family:'ZCOOL KuaiLe';font-size:1.4rem;color:var(--text);">🧬 BATI人格测试</span>
+      <span style="font-size:.85rem;color:#999;">${batiState.current+1}/${BATI_QUESTIONS.length}</span>
+    </div>
+    <div class="bati-progress-bar"><div class="bati-progress-fill" style="width:${pct}%"></div></div>
+    <div class="bati-question-card">
+      <div class="bati-question-num">第${batiState.current+1}题</div>
+      <div class="bati-question-text">${q.text}</div>
+      <div class="bati-options">${q.options.map((o,i)=>`<button class="bati-option" onclick="selectBATI(${i})" id="bati-opt-${i}">${o.text}</button>`).join('')}</div>
+    </div></div>`;
+}
+function selectBATI(idx){
+  const q=BATI_QUESTIONS[batiState.current]; const opt=q.options[idx];
+  if(q.isFinal&&!opt.correct){
+    const btn=$('bati-opt-'+idx); if(btn){btn.classList.add('wrong');btn.disabled=true;}
+    const wrap=document.querySelector('.bati-wrap'); if(wrap){const a=document.createElement('div');
+    a.style.cssText='background:#E85D26;color:#fff;border-radius:10px;padding:12px 16px;font-size:.9rem;text-align:center;animation:fadeSlideIn .3s ease;';a.textContent='抱歉，这道是附加题，只有A能选哟~';wrap.appendChild(a);setTimeout(()=>a.remove(),2500);} return;
+  }
+  batiState.scores[opt.dim]++; batiState.answers.push(idx);
+  document.querySelectorAll('.bati-option').forEach(b=>b.disabled=true);
+  const sel=$('bati-opt-'+idx); if(sel) sel.classList.add('selected');
+  setTimeout(()=>{batiState.current++; batiState.current>=BATI_QUESTIONS.length?showBATIResult():renderBATI();},400);
+}
+function showBATIResult(){
+  const s=batiState.scores; const type=calcBATIType(s); const code=type.code;
+  const rawCode=(s.B>=5?'B':'b')+(s.A>=5?'A':'a')+(s.T>=5?'T':'t')+(s.I>=5?'I':'i');
+  $('screen-bati').innerHTML=`<div class="bati-wrap"><div class="bati-result-card">
+    <div style="font-size:.9rem;color:#999;margin-bottom:4px;">你的商分人格是</div>
+    <div class="bati-result-code">${code}</div><div class="bati-result-name">${type.name}</div>
+    <div class="bati-sprite-wrap"><canvas id="bati-sprite-canvas" width="80" height="100" style="image-rendering:pixelated;"></canvas></div>
+    <div class="bati-result-desc">${type.desc}</div>
+    <div style="font-size:.78rem;color:#aaa;margin-top:-8px;margin-bottom:8px;">${code} = ${type.desc.split('。')[0]}</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px;">
+      <div style="background:#FFF5EE;border:2px solid #E8D5B0;border-radius:8px;padding:8px 14px;font-size:.85rem;">💼 Business感 <strong style="color:var(--accent);">${s.B}</strong>/10</div>
+      <div style="background:#FFF5EE;border:2px solid #E8D5B0;border-radius:8px;padding:8px 14px;font-size:.85rem;">🌀 抽象度 <strong style="color:var(--accent);">${s.A}</strong>/10</div>
+      <div style="background:#FFF5EE;border:2px solid #E8D5B0;border-radius:8px;padding:8px 14px;font-size:.85rem;">🐟 摸鱼指数 <strong style="color:var(--accent);">${s.T}</strong>/10</div>
+      <div style="background:#FFF5EE;border:2px solid #E8D5B0;border-radius:8px;padding:8px 14px;font-size:.85rem;">🚀 冲劲值 <strong style="color:var(--accent);">${s.I}</strong>/10</div>
+    </div></div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn" onclick="startBATI()">再测一次</button>
+      <button class="btn" style="background:var(--card);color:var(--text);box-shadow:0 4px 0 #ccc;" onclick="showScreen(\'hub\')">返回大厅</button>
+    </div></div>`;
+  setTimeout(()=>{const c=$('bati-sprite-canvas');if(!c)return;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;drawBATISprite(ctx,40,75,type.color,rawCode);},100);
+}
+function drawBATISprite(ctx,cx,cy,color,code){
+  const hasHat=code[0]==='B', hasGlow=code[2]==='T';
+  if(hasGlow){ctx.fillStyle='rgba(100,180,255,0.15)';ctx.beginPath();ctx.arc(cx,cy-10,28,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#2a2a2a';ctx.fillRect(cx-8,cy-32,16,6);ctx.fillRect(cx-9,cy-28,4,5);ctx.fillRect(cx+5,cy-28,4,5);
+  if(hasHat){ctx.fillStyle='#2C1810';ctx.fillRect(cx-10,cy-36,20,4);ctx.fillRect(cx-7,cy-40,14,6);}
+  ctx.fillStyle='#FDDCB5';ctx.fillRect(cx-7,cy-26,14,11);ctx.fillStyle='#ffe8c8';ctx.fillRect(cx-5,cy-24,5,4);
+  ctx.fillStyle='#1a1a1a';ctx.fillRect(cx-5,cy-22,3,3);ctx.fillRect(cx+2,cy-22,3,3);
+  ctx.fillStyle=color;ctx.fillRect(cx-8,cy-15,16,14);ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect(cx-8,cy-15,4,14);
+  ctx.fillStyle='#fff';ctx.fillRect(cx-2,cy-15,4,5);
+  ctx.fillStyle=color;ctx.fillRect(cx-12,cy-14,4,9);ctx.fillRect(cx+8,cy-14,4,9);
+  if(code[1]==='A'){ctx.fillStyle='#fff';ctx.fillRect(cx+11,cy-20,10,10);ctx.fillStyle='#E85D26';ctx.font='bold 8px sans-serif';ctx.fillText('?',cx+14,cy-13);}
+  ctx.fillStyle='#FDDCB5';ctx.fillRect(cx-12,cy-6,4,3);ctx.fillRect(cx+8,cy-6,4,3);
+  ctx.fillStyle='#1a1a2e';ctx.fillRect(cx-6,cy-1,5,10);ctx.fillRect(cx+1,cy-1,5,10);
+  if(code[3]==='I'){ctx.fillStyle='rgba(232,93,38,0.5)';ctx.fillRect(cx-14,cy+2,4,2);ctx.fillRect(cx-12,cy+5,3,2);ctx.fillRect(cx+10,cy+2,4,2);ctx.fillRect(cx+11,cy+5,3,2);}
+  ctx.fillStyle='#0a0a1a';ctx.fillRect(cx-7,cy+8,6,3);ctx.fillRect(cx+1,cy+8,6,3);
+  ctx.fillStyle='rgba(0,0,0,0.12)';ctx.fillRect(cx-9,cy+11,18,3);
+}
+
+// ============ INIT ============
+function init(){
+  preloadAssets();
+  buildCharGrid(); updateHubCards();
+}
+init();
+</script>
+</body>
+</html>
