@@ -16,3 +16,10 @@ node_modules/
 
 # Old folders (already cleaned, just in case)
 assets/assets-*/
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
