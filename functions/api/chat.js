@@ -6,7 +6,7 @@ export async function onRequestPost(context) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.DEEPSEEK_API_KEY}`
+        'Authorization': `Bearer ${env.deepseekapi}`
       },
       body: JSON.stringify(body)
     });
