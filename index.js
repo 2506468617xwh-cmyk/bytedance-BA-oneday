@@ -2,7 +2,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // 1. 如果前端请求的是大模型 AI 接口，直接进行代理转发
+    // 如果前端请求的是大模型 AI 接口
     if (url.pathname === '/api/chat' && request.method === 'POST') {
       try {
         const body = await request.json();
@@ -29,7 +29,7 @@ export default {
       }
     }
 
-    // 2. 如果是其他请求（如主页、图片素材等），无缝交回给 Cloudflare 默认的静态资源托管
+    // 其他所有请求（网页、像素素材等），直接交回给静态资产服务
     return env.ASSETS.fetch(request);
   }
 };
