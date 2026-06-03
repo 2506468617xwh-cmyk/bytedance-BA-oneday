@@ -399,6 +399,7 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
 // ============ CHARACTER DATA ============
 const AVATAR = 'assets/avatars/';
 const CHARACTERS = [
+  { id:20, name:'林梦瑶', at:'@林梦瑶', title:'部门负责人',         sig:'',                                              img:AVATAR+'linmengyao.png',    color:'#C0392B', short:'梦瑶' },
   { id:0,  name:'柯晗',   at:'@柯晗',   title:'行业组Leader',       sig:'保持好奇心',                                    img:AVATAR+'kehan.png',         color:'#E85D26', short:'柯晗' },
   { id:11, name:'徐妍妮', at:'@徐妍妮', title:'Agent质检',          sig:'agent质检|质检agent',                           img:AVATAR+'xuyanni.png',       color:'#E67E22', short:'妍妮' },
   { id:1,  name:'徐储同', at:'@徐储同', title:'行业组成员',         sig:'4.27-4.30休假，有时差，消息日清晚复',             img:AVATAR+'xuchutong.png',     color:'#4A90D9', short:'储同' },
@@ -418,11 +419,13 @@ const CHARACTERS = [
   { id:17, name:'许斯佳', at:'@许斯佳', title:'成员',              sig:'innie OFF outie ON｜cu in Jul. ^ ^',             img:AVATAR+'xusijia.png',       color:'#3498DB', short:'斯佳' },
   { id:18, name:'李欣然', at:'@李欣然', title:'BP医疗机构',         sig:'bp医疗机构，机构销售咨询先看——咨询优先找接口人；审批商分节点工作日T+3，催审不回', img:AVATAR+'lixinran.png', color:'#E74C3C', short:'欣然' },
   { id:19, name:'田宇洋', at:'@田宇洋', title:'成员',              sig:'已读不会是在细品',                               img:AVATAR+'tianyuyang.png',    color:'#9B59B6', short:'宇洋' },
+  { id:21, name:'朱倩',   at:'@朱倩',   title:'实习生',            sig:'今天是实习的第27天',                             img:AVATAR+'zhuqian.png',       color:'#E67E22', short:'朱倩' },
+  { id:22, name:'罗雨婧', at:'@罗雨婧', title:'成员',              sig:'对抗AI和人生的双重幻觉',                         img:AVATAR+'luoyujing.png',     color:'#8E44AD', short:'雨婧' },
 ];
 
 // ============ ASSET PRELOADER ============
 const ASSETS = {};
-const CHARACTERS_LIST = ['翟祎玮','傅铖茜','柯晗','唐子健','徐储同','徐妍妮','薛维瀚','薛桢桢','杨徉','张路晴','张艺骞','朱矜颖','侯雨冰','李萌','李欣然','田宇洋','许斯佳','游璐','朱顺莱','lexi'];
+const CHARACTERS_LIST = ['林梦瑶','翟祎玮','傅铖茜','柯晗','唐子健','徐储同','徐妍妮','薛维瀚','薛桢桢','杨徉','张路晴','张艺骞','朱矜颖','侯雨冰','李萌','李欣然','田宇洋','许斯佳','游璐','朱顺莱','lexi','朱倩','罗雨婧'];
 const ASSET_LIST = [];
 CHARACTERS_LIST.forEach(name => {
   ASSET_LIST.push([`char_${name}_front`, `assets/characters/${name}.png`]);
