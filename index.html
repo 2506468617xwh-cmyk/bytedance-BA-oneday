@@ -711,7 +711,7 @@ const NPCS=[
 let player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
 let GAME_LOOP_ID=null, GAME_PAUSED=false, LAST_TIME=0;
 let DPAD_DIR=null;
-const FURNITURE_BLOCKS=[{x:38,y:150,w:80,h:63},{x:148,y:150,w:80,h:63},{x:258,y:150,w:72,h:63},{x:34,y:328,w:220,h:20}];
+const FURNITURE_BLOCKS=[{x:38,y:150,w:80,h:63},{x:148,y:150,w:80,h:63},{x:258,y:150,w:72,h:63},{x:34,y:328,w:220,h:20},{x:447,y:34,w:55,h:90},{x:710,y:28,w:62,h:100},{x:530,y:130,w:100,h:75},{x:26,y:415,w:52,h:55}];
 
 function rectHit(a,b){ return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y; }
 function collidesWall(px,py){ const pr={x:px+3,y:py+2,w:PLAYER_W-6,h:PLAYER_H-4}; for(const w of WALLS) if(rectHit(pr,w)) return true; for(const [key,b] of Object.entries(DOOR_BLOCKERS)){ if(!isAreaUnlocked(key) && rectHit(pr,b)) return true; } for(const f of FURNITURE_BLOCKS) if(rectHit(pr,f)) return true; return false; }
