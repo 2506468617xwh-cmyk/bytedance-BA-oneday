@@ -198,7 +198,7 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
   <h1 class="game-title">商分的一天</h1>
   <p class="game-subtitle">Game Hub · 职场剧本杀 &amp; 矿工 &amp; BATI测试</p>
   <button class="btn" style="margin-top:32px;font-size:1.1rem;padding:14px 40px;" onclick="enterGame()">开始游戏 →</button>
-  <p class="api-hint" style="margin-top:16px;">献给商分上海的哥姐们 ❤️</p>
+  <p class="api-hint" style="margin-top:16px;">献给商分的哥姐们 ❤️</p>
 </div>
 
 <!-- SCREEN 1: CHARACTER SELECT -->
@@ -212,12 +212,11 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
 <!-- SCREEN HUB -->
 <div id="screen-hub" class="screen hub-screen">
   <h2 class="hub-title">🎮 游戏大厅</h2>
-  <p class="char-info" id="hub-char-info"></p>
   <div class="hub-cards">
     <div class="hub-card" id="hub-game1" onclick="startGame1()">
       <div class="card-icon">🔍</div>
       <div class="card-title">周报失踪之谜</div>
-      <div class="card-desc">商分上海 · 职场剧本杀</div>
+      <div class="card-desc">商分 · 职场剧本杀</div>
       <div class="card-status unlocked" id="hub-status-1">✅ 可进入</div>
     </div>
     <div class="hub-card locked" id="hub-game2">
@@ -252,7 +251,6 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
 <div id="screen-main" class="screen main-screen">
   <div class="game-left">
     <div class="game-topbar">
-      <span class="char-badge" id="top-char-name">@柯晗</span>
       <span class="clue-count">线索: <span id="clue-num">0</span>/5</span>
       <button class="btn-secondary" style="padding:6px 14px;font-size:.8rem;margin-left:auto;" onclick="toggleCluePanel()">📒 线索本</button>
     </div>
@@ -565,9 +563,6 @@ function selectChar(id) {
 }
 function confirmCharacter() {
   if (G.charId === null) return;
-  const c = CHARACTERS[G.charId];
-  $('top-char-name').textContent = c.at + ' · ' + c.title;
-  $('hub-char-info').textContent = '当前角色：' + c.at + ' · ' + c.title;
   updateHubCards();
   showScreen('hub');
 }
@@ -676,7 +671,7 @@ async function generateEnding(){
   const reactions=await Promise.all(otherChars.map(c=>callLLM(`你是${c.at}，职位${c.title}，签名是"${c.sig}"。真相大白了——周报是离职实习生@薛桢桢 好心办坏事，用手机备份时误删的。请用符合你人设的独特语气写一句反应（20-50字）。每个人的反应要有差异化：有的原谅，有的吐槽，有的说早就猜到了，有的关心桢桢，有的追究备份流程。禁止所有角色都说同样的话。禁止使用"好家伙"开头。`,'发表评论。').then(text=>({name:c.name,at:c.at,text:text||'...'}))));
   $('ending-reactions').innerHTML=reactions.map((r,i)=>`<div class="react-item" style="animation-delay:${i*0.15}s"><strong>${r.at}</strong>：${r.text}</div>`).join('');
 }
-function showLetter(){ showScreen('letter'); const c=G.charId!==null?CHARACTERS[G.charId]:{name:'侦探',at:'@侦探'}; $('letter-content').innerHTML=`<div class="dear">亲爱的 ${c.name}：</div><p>感谢你参与《周报失踪之谜》——商分上海·职场剧本杀。</p><p>在这个周四的夜晚，你化身为${c.at}，穿梭于工位、茶水间、会议室与电梯口之间，拼凑出真相的碎片。</p><p>周报虽然消失了，但故事里的每一个人……都真实地活在这些文字里。</p><p>职场有职场的规则，但更有职场的温度。</p><p>希望你喜欢这个故事。保持好奇心，下次再见。</p><div class="sign-off">—— 商分上海 · 全员敬上</div>`; }
+function showLetter(){ showScreen('letter'); const c=G.charId!==null?CHARACTERS[G.charId]:{name:'侦探',at:'@侦探'}; $('letter-content').innerHTML=`<div class="dear">亲爱的 ${c.name}：</div><p>感谢你参与《周报失踪之谜》——商分·职场剧本杀。</p><p>在这个周四的夜晚，你化身为${c.at}，穿梭于工位、茶水间、会议室与电梯口之间，拼凑出真相的碎片。</p><p>周报虽然消失了，但故事里的每一个人……都真实地活在这些文字里。</p><p>职场有职场的规则，但更有职场的温度。</p><p>希望你喜欢这个故事。保持好奇心，下次再见。</p><div class="sign-off">—— 商分 · 全员敬上</div>`; }
 function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); }
 function resetGame(){ G.charId=null; G.clues={}; G.dialogues={}; G.yangRound=0; pickedSuspect=null; G.unlocked=new Set(['desk']); G.areaClicks={}; G._gameLoopRunning=false; buildCharGrid(); $('btn-char-confirm').disabled=true; showScreen('api'); updateClueUI(); }
 
@@ -716,7 +711,7 @@ const NPCS=[
 let player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
 let GAME_LOOP_ID=null, GAME_PAUSED=false, LAST_TIME=0;
 let DPAD_DIR=null;
-const FURNITURE_BLOCKS=[{x:38,y:155,w:80,h:58},{x:148,y:155,w:80,h:58},{x:258,y:155,w:72,h:58},{x:34,y:325,w:220,h:28}];
+const FURNITURE_BLOCKS=[{x:38,y:150,w:80,h:63},{x:148,y:150,w:80,h:63},{x:258,y:150,w:72,h:63},{x:34,y:328,w:220,h:20}];
 
 function rectHit(a,b){ return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y; }
 function collidesWall(px,py){ const pr={x:px+3,y:py+2,w:PLAYER_W-6,h:PLAYER_H-4}; for(const w of WALLS) if(rectHit(pr,w)) return true; for(const [key,b] of Object.entries(DOOR_BLOCKERS)){ if(!isAreaUnlocked(key) && rectHit(pr,b)) return true; } for(const f of FURNITURE_BLOCKS) if(rectHit(pr,f)) return true; return false; }
