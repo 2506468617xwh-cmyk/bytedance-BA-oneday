@@ -705,10 +705,13 @@ const DOOR_BLOCKERS={
   meeting:{x:160,y:280,w:50,h:12},elevator:{x:170,y:395,w:50,h:10},feishu:{x:440,y:280,w:60,h:12},
 };
 const NPCS=[
-  {cid:0,area:'desk',rx:55,ry:30,name:'柯晗'},{cid:5,area:'desk',rx:155,ry:30,name:'张路晴'},
-  {cid:8,area:'desk',rx:268,ry:30,name:'张艺骞'},{cid:2,area:'pantry',rx:55,ry:65,name:'徐储同'},
-  {cid:6,area:'pantry',rx:175,ry:90,name:'朱矜颖'},{cid:4,area:'meeting',rx:148,ry:18,name:'傅铖茜'},
-  {cid:3,area:'elevator',rx:170,ry:18,name:'杨徉'},
+  {cid:1, area:'desk',     rx:55, ry:30,  name:'柯晗'},
+  {cid:6, area:'desk',     rx:155,ry:30,  name:'张路晴'},
+  {cid:9, area:'desk',     rx:268,ry:30,  name:'张艺骞'},
+  {cid:3, area:'pantry',   rx:55, ry:65,  name:'徐储同'},
+  {cid:7, area:'pantry',   rx:175,ry:90,  name:'朱矜颖'},
+  {cid:5, area:'meeting',  rx:148,ry:18,  name:'傅铖茜'},
+  {cid:4, area:'elevator', rx:170,ry:18,  name:'杨徉'},
 ];
 let player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
 let GAME_LOOP_ID=null, GAME_PAUSED=false, LAST_TIME=0;
