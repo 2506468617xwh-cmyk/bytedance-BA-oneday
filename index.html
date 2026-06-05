@@ -984,6 +984,21 @@ document.addEventListener('click',e=>{ if(G.screen!=='miner') return; if(e.targe
 // ============================================================================
 //  GAME 3: BATI PERSONALITY TEST
 // ============================================================================
+// 个性化题目：key是角色name字段，value是插入位置（插在第几题之后，0=最开始）和题目内容
+const PERSONAL_QUESTIONS = {
+  '柯晗': { afterIndex: 2, question: { text: '当你极度怀疑薛师傅的头像就是他自己的脸，你的选择是！', isPersonal: true, options: [{text:'A. 在工位仔细端详，不断加深怀疑', dim:'T'}, {text:'B. 直接发飞书问他："薛师傅，你的头像是把你的脸用AI融进去的吗"', dim:'A'}, {text:'C. 尝试把自己的脸也融进去', dim:'I'}, {text:'D. 我从来没有这么觉得，薛师傅这么帅怎么会是头像里饺子那个样子！', dim:'B', fake:true, fakeMsg:'呵呵！柯老师你明明都已经问我了！'}] } },
+  '徐妍妮': { afterIndex: 4, question: { text: '当明天就要汇报了，今天还有十几张图没有画完，你的选择是：', isPersonal: true, options: [{text:'A. 看你的了维瀚！', dim:'T'}, {text:'B. 撸起袖子自己干！', dim:'I'}, {text:'C. 看你的了矜颖！', dim:'T'}, {text:'D. 看你的了矜颖和维瀚！', dim:'A'}] } },
+  '徐储同': { afterIndex: 1, question: { text: '到达新西兰后，发现新西兰真的没油了……回不了上海了！你的选择是：', isPersonal: true, options: [{text:'A. 我将去超市偷点食用油，助力我回到上海', dim:'I'}, {text:'B. 直接把护照撕掉！无痛化身新西兰公民', dim:'A'}, {text:'C. 开辟新西兰业务，成为字节第一位base新西兰的倒贴打工人', dim:'B'}, {text:'D. 就是游我也要游回上海！柯柯还在等我回来汇报！', dim:'I'}] } },
+  '杨徉': { afterIndex: 3, question: { text: '当你在电梯偷听到薛桢桢想喝奶茶，你的选择是……', isPersonal: true, options: [{text:'A. 霸道总裁来了，全场消费杨公子买单', dim:'B'}, {text:'B. 让薛师傅背奶茶锅，不过依旧全场消费杨公子买单', dim:'A'}, {text:'C. 假装没听到', dim:'T'}, {text:'D. 相信薛师傅会买的！', dim:'I'}] } },
+  '傅铖茜': { afterIndex: 5, question: { text: '你认为部门下一个最需要被牵红线的人是：', isPersonal: true, options: [{text:'A. 薛维瀚', dim:'B'}, {text:'B. 薛师傅', dim:'B'}, {text:'C. 维瀚', dim:'B'}, {text:'D. 薛部长', dim:'B'}] } },
+  '朱矜颖': { afterIndex: 2, question: { text: '当你听到@薛维瀚即使去成都出差也要坐12h高铁，你的反应是：', isPersonal: true, options: [{text:'A. 铁屁股来了', dim:'A'}, {text:'B. 我也想急头白脸坐12h高铁', dim:'T'}, {text:'C. 那下次去北京再叫他吧', dim:'I'}, {text:'D. 以后招实习生还得加一个问题：你晕飞机吗', dim:'B'}] } },
+  '唐子健': { afterIndex: 0, question: { text: '提前祝新婚快乐！本题无需作答，点击屏幕任意位置跳转下一题～', isPersonal: true, isTap: true, options: [] } },
+  '张艺骞': { afterIndex: 6, question: { text: '请解释，"感情状态是流动的"这句话的具体含义：', isPersonal: true, options: [{text:'A. 懂的都懂，商分hotnerd不解释', dim:'A'}, {text:'B. 流动的就是流动的呀～', dim:'T'}, {text:'C. 其实没有感情状态，都是幻觉罢了', dim:'I'}, {text:'D. ', dim:'B'}] } },
+  '翟祎玮': { afterIndex: 4, question: { text: '教练今天又对你的晚餐不满意，你的反应是：', isPersonal: true, options: [{text:'A. 上了一天班吃点好的怎么了！', dim:'T'}, {text:'B. 教练我错了，下次我还敢', dim:'A'}, {text:'C. 愧疚无比！我又破戒了！', dim:'I'}, {text:'D. 这只是我的热身，晚上还要加餐哟', dim:'B'}] } },
+  '薛桢桢': { afterIndex: 1, question: { text: '当你发现今天又要加班了，你的第一反应是：', isPersonal: true, options: [{text:'A. 我的日常罢了', dim:'T'}, {text:'B. 好痛苦……明天起不来了', dim:'I'}, {text:'C. 嫉妒薛师傅', dim:'A', fake:true, fakeMsg:'别太嫉妒我哟宝子～'}, {text:'D. 不存在这种情况，下班前所有任务都将被我终结！', dim:'B'}] } },
+  '朱倩': { afterIndex: 7, question: { text: '当你今天又被薛师傅辱骂，你的心理活动是：', isPersonal: true, options: [{text:'A. 薛师傅骂得对', dim:'T'}, {text:'B. 杀杀杀', dim:'I', fake:true, fakeMsg:'不许杀'}, {text:'C. 最讨厌事后道歉', dim:'A', fake:true, fakeMsg:'0个人准备事后道歉'}, {text:'D. 我也要辱骂薛师傅', dim:'B', fake:true, fakeMsg:'无法选中哟宝子～'}] } },
+  '罗雨婧': { afterIndex: 5, question: { text: '当你今晚要加班，但是乐队要演出，你的选择是：', isPersonal: true, options: [{text:'A. 必须加班，工作第一！', dim:'B'}, {text:'B. 必须乐队，摇滚第一！', dim:'I'}, {text:'C. 我将在工位唱摇滚', dim:'A'}, {text:'D. 我将在舞台写文档', dim:'T'}] } },
+};
 const BATI_QUESTIONS = [
   {text:"早上踩点上班发现电梯人满为患！你的选择是：",options:[
     {text:"A. 今天就是变成肉饼我也要挤上去",dim:'T'},{text:"B. 大喊一声着火了，让电梯里的人都跑出来，自己享用超大电梯空间",dim:'A'},{text:"C. 电梯是给弱者用的，我从来都走楼梯的",dim:'I'},{text:"D. 抱歉，本人从来不卡点上班",dim:'B'},]},
@@ -1032,15 +1047,42 @@ function calcBATIType(scores){
 let batiState={current:0,scores:{B:0,A:0,T:0,I:0},answers:[]};
 
 function openBATIGame(){ showScreen('bati'); startBATI(); }
-function startBATI(){ batiState={current:0,scores:{B:0,A:0,T:0,I:0},answers:[]}; renderBATI(); }
+function startBATI() {
+  batiState = {current: 0, scores: {B:0, A:0, T:0, I:0}, answers: []};
+
+  // 根据当前角色动态生成题目列表
+  const currentChar = CHARACTERS.find(c => c.id === G.charId);
+  const charName = currentChar ? currentChar.name : '';
+  const personalQ = PERSONAL_QUESTIONS[charName];
+
+  // 复制基础题目
+  let questions = [...BATI_QUESTIONS];
+
+  // 如果有个性化题目，插入到指定位置
+  if (personalQ) {
+    const insertAt = personalQ.afterIndex + 1; // afterIndex=0表示插在第1题前
+    questions.splice(insertAt, 0, personalQ.question);
+  }
+
+  batiState.questions = questions;
+  renderBATI();
+}
 function renderBATI(){
-  const q=BATI_QUESTIONS[batiState.current]; const pct=(batiState.current/BATI_QUESTIONS.length)*100;
-  $('screen-bati').innerHTML=`<div class="bati-wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+  const q=batiState.questions[batiState.current]; const total=batiState.questions.length; const pct=(batiState.current/total)*100;
+  const progress=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <span style="font-family:'ZCOOL KuaiLe';font-size:1.4rem;color:var(--text);">🧬 BATI人格测试</span>
-      <span style="font-size:.85rem;color:#999;">${batiState.current+1}/${BATI_QUESTIONS.length}</span>
+      <span style="font-size:.85rem;color:#999;">${batiState.current+1}/${total}</span>
     </div>
-    <div class="bati-progress-bar"><div class="bati-progress-fill" style="width:${pct}%"></div></div>
+    <div class="bati-progress-bar"><div class="bati-progress-fill" style="width:${pct}%"></div></div>`;
+  if(q.isTap){
+    $('screen-bati').innerHTML=`<div class="bati-wrap">${progress}
+    <div class="bati-question-card" onclick="skipTapQuestion()" style="cursor:pointer;text-align:center;padding:40px 24px;">
+      <div class="bati-question-text" style="font-size:1.3rem;line-height:1.8;">${q.text}</div>
+      <div style="margin-top:20px;color:#E85D26;font-size:.9rem;animation:blink 1s infinite;">点击任意位置继续 ➜</div>
+    </div></div>`;
+    return;
+  }
+  $('screen-bati').innerHTML=`<div class="bati-wrap">${progress}
     <div class="bati-question-card">
       <div class="bati-question-num">第${batiState.current+1}题</div>
       <div class="bati-question-text">${q.text}</div>
@@ -1048,16 +1090,43 @@ function renderBATI(){
     </div></div>`;
 }
 function selectBATI(idx){
-  const q=BATI_QUESTIONS[batiState.current]; const opt=q.options[idx];
-  if(q.isFinal&&!opt.correct){
-    const btn=$('bati-opt-'+idx); if(btn){btn.classList.add('wrong');btn.disabled=true;}
+  const q=batiState.questions[batiState.current];
+
+  // 处理 fake 选项
+  if(q.options[idx] && q.options[idx].fake){
+    const btn=document.getElementById(`bati-opt-${idx}`);
+    if(btn){btn.classList.add('wrong');btn.disabled=true;}
+    const wrap=document.querySelector('.bati-wrap'); if(wrap){const alert=document.createElement('div');
+    alert.style.cssText='background:#E85D26;color:#fff;border-radius:10px;padding:12px 16px;font-size:.9rem;text-align:center;margin-top:10px;';
+    alert.textContent=q.options[idx].fakeMsg||'这个选项不可选哟～';wrap.appendChild(alert);setTimeout(()=>alert.remove(),2500);}
+    return;
+  }
+
+  // 最后一题特殊处理（对薛师傅的评价）
+  if(q.isFinal&&!q.options[idx].correct){
+    const btn=document.getElementById(`bati-opt-${idx}`);
+    if(btn){btn.classList.add('wrong');btn.disabled=true;}
     const wrap=document.querySelector('.bati-wrap'); if(wrap){const a=document.createElement('div');
     a.style.cssText='background:#E85D26;color:#fff;border-radius:10px;padding:12px 16px;font-size:.9rem;text-align:center;animation:fadeSlideIn .3s ease;';a.textContent='抱歉，这道是附加题，只有A能选哟~';wrap.appendChild(a);setTimeout(()=>a.remove(),2500);} return;
   }
+
+  // 个性化题目不计分，直接跳下一题
+  if(q.isPersonal){
+    document.querySelectorAll('.bati-option').forEach(b=>b.disabled=true);
+    const sel=document.getElementById(`bati-opt-${idx}`); if(sel) sel.classList.add('selected');
+    setTimeout(()=>{batiState.current++; batiState.current>=batiState.questions.length?showBATIResult():renderBATI();},400);
+    return;
+  }
+
+  const opt=q.options[idx];
   batiState.scores[opt.dim]++; batiState.answers.push(idx);
   document.querySelectorAll('.bati-option').forEach(b=>b.disabled=true);
-  const sel=$('bati-opt-'+idx); if(sel) sel.classList.add('selected');
-  setTimeout(()=>{batiState.current++; batiState.current>=BATI_QUESTIONS.length?showBATIResult():renderBATI();},400);
+  const sel=document.getElementById(`bati-opt-${idx}`); if(sel) sel.classList.add('selected');
+  setTimeout(()=>{batiState.current++; batiState.current>=batiState.questions.length?showBATIResult():renderBATI();},400);
+}
+function skipTapQuestion() {
+  batiState.current++;
+  if(batiState.current>=batiState.questions.length){showBATIResult();}else{renderBATI();}
 }
 function showBATIResult(){
   const s=batiState.scores; const type=calcBATIType(s); const code=type.code;
