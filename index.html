@@ -351,17 +351,12 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
       <div class="card-status locked-st" id="hub-status-3">🔒 通关Game 2解锁</div>
     </div>
   </div>
-  <div class="letter-section" id="letter-section">
-    <div class="letter-section-title">✉️ 薛师傅的神秘寄语</div>
-    <div class="hub-letter-paper" id="letter-paper">
-      <div class="letter-no-letter" id="letter-placeholder">
-        选择角色后，你的专属寄语将在此呈现 ✨
-      </div>
-      <div id="letter-to" class="letter-to" style="display:none;"></div>
-      <div id="letter-body" class="letter-body" style="display:none;"></div>
-      <div id="letter-footer" class="letter-footer" style="display:none;"></div>
-      <div id="letter-seal" class="letter-seal" style="display:none;">薛师傅<br>亲启</div>
-    </div>
+  <div class="hub-card" id="hub-letter" onclick="openLetter()" style="cursor:pointer;">
+    <div class="card-icon">✉️</div>
+    <div class="card-title">薛师傅的神秘寄语</div>
+    <div class="card-desc">一封来自薛师傅的告别信</div>
+    <div class="card-status unlocked">📬 点击查看</div>
+  </div>
   </div>
 </div>
 
@@ -497,6 +492,21 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
 
 <!-- GAME 3: BATI -->
 <div id="screen-bati" class="screen" style="justify-content:flex-start !important;padding:20px;gap:0;min-height:100vh;background:var(--bg);">
+</div>
+
+<!-- SCREEN LETTER -->
+<div id="screen-letter" class="screen" style="justify-content:flex-start !important;padding:30px 20px;gap:0;min-height:100vh;background:var(--bg);">
+  <div style="width:100%;max-width:680px;text-align:center;margin-bottom:24px;">
+    <span style="font-family:'ZCOOL KuaiLe';font-size:1.4rem;color:var(--text);">✉️ 薛师傅的神秘寄语</span>
+  </div>
+  <div class="hub-letter-paper" id="letter-paper" style="flex-shrink:0;">
+    <div class="letter-no-letter" id="letter-placeholder">加载中…</div>
+    <div id="letter-to" class="letter-to" style="display:none;"></div>
+    <div id="letter-body" class="letter-body" style="display:none;"></div>
+    <div id="letter-footer" class="letter-footer" style="display:none;"></div>
+    <div id="letter-seal" class="letter-seal" style="display:none;"></div>
+  </div>
+  <button class="btn" style="margin-top:24px;background:var(--card);color:var(--text);box-shadow:0 4px 0 #ccc;" onclick="showScreen('hub')">← 返回大厅</button>
 </div>
 
 <!-- SCENE MODAL -->
@@ -722,10 +732,22 @@ function confirmCharacter() {
   if (G.charId === null) return;
   updateHubCards();
   showScreen('hub');
-  renderLetterForChar();
 }
 
-function renderLetterForChar() {
+function openLetter() {
+  showScreen('letter');
+  // 重置信纸为初始状态
+  const toEl = document.getElementById('letter-to');
+  const bodyEl = document.getElementById('letter-body');
+  const footerEl = document.getElementById('letter-footer');
+  const sealEl = document.getElementById('letter-seal');
+  const placeholder = document.getElementById('letter-placeholder');
+  if (toEl) { toEl.style.display = 'none'; toEl.style.opacity = '0'; }
+  if (bodyEl) { bodyEl.style.display = 'none'; bodyEl.innerHTML = ''; }
+  if (footerEl) { footerEl.style.display = 'none'; footerEl.style.opacity = '0'; }
+  if (sealEl) { sealEl.style.display = 'none'; sealEl.style.opacity = '0'; }
+  if (placeholder) { placeholder.style.display = 'block'; placeholder.textContent = '加载中…'; }
+  // 触发动画
   const selectedChar = CHARACTERS[G.charId];
   if (selectedChar) { renderLetter(selectedChar.name); }
 }
@@ -767,6 +789,7 @@ function renderLetter(charName) {
 
   sealEl.style.display = 'flex';
   sealEl.style.opacity = '0';
+  sealEl.innerHTML = `${charName}<br>亲启`;
 
   let delay = 200;
 
@@ -918,7 +941,7 @@ async function generateEnding(){
   $('ending-reactions').innerHTML=reactions.map((r,i)=>`<div class="react-item" style="animation-delay:${i*0.15}s"><strong>${r.at}</strong>：${r.text}</div>`).join('');
 }
 function showLetter(){ showScreen('letter'); const c=G.charId!==null?CHARACTERS[G.charId]:{name:'侦探',at:'@侦探'}; $('letter-content').innerHTML=`<div class="dear">亲爱的 ${c.name}：</div><p>感谢你参与《周报失踪之谜》——商分·职场剧本杀。</p><p>在这个周四的夜晚，你化身为${c.at}，穿梭于工位、茶水间、会议室与电梯口之间，拼凑出真相的碎片。</p><p>周报虽然消失了，但故事里的每一个人……都真实地活在这些文字里。</p><p>职场有职场的规则，但更有职场的温度。</p><p>希望你喜欢这个故事。保持好奇心，下次再见。</p><div class="sign-off">—— 商分 · 全员敬上</div>`; }
-function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); renderLetterForChar(); }
+function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); }
 function resetGame(){ G.charId=null; G.clues={}; G.dialogues={}; G.yangRound=0; pickedSuspect=null; G.unlocked=new Set(['desk']); G.areaClicks={}; G._gameLoopRunning=false; buildCharGrid(); $('btn-char-confirm').disabled=true; showScreen('api'); updateClueUI(); }
 
 // ============================================================================
@@ -1222,7 +1245,7 @@ function endMinerRound(won){
   }
 }
 function restartMiner(){ initMinerGame(); }
-function endMinerGame(){ showScreen('hub'); renderLetterForChar(); }
+function endMinerGame(){ showScreen('hub'); }
 function startMinerGame(){ showScreen('miner'); showMinerGuide(); }
 document.addEventListener('keydown',e=>{ if(G.screen!=='miner') return; if(e.key===' '||e.code==='Space'){ e.preventDefault(); shootMinerHook(); } });
 document.addEventListener('click',e=>{ if(G.screen!=='miner') return; if(e.target.closest('.btn')) return; if($('miner-guide-overlay').style.display==='flex') return; shootMinerHook(); });
