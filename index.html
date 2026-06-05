@@ -1050,8 +1050,8 @@ function openBATIGame(){ showScreen('bati'); startBATI(); }
 function startBATI() {
   batiState = {current: 0, scores: {B:0, A:0, T:0, I:0}, answers: []};
 
-  // 根据当前角色动态生成题目列表
-  const currentChar = CHARACTERS.find(c => c.id === G.charId);
+  // 根据当前角色动态生成题目列表（G.charId 是 CHARACTERS 数组下标）
+  const currentChar = CHARACTERS[G.charId];
   const charName = currentChar ? currentChar.name : '';
   const personalQ = PERSONAL_QUESTIONS[charName];
 
