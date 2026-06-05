@@ -189,6 +189,125 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
   .dpad-btn { width:56px; height:56px; font-size:1.3rem; }
   .dpad-grid { grid-template-columns:56px 56px 56px; grid-template-rows:56px 56px 56px; }
 }
+/* 神秘寄语板块 */
+.letter-section {
+  width: 100%;
+  max-width: 680px;
+  margin: 32px auto 0;
+  padding: 0 16px;
+}
+.letter-section-title {
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 1.3rem;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.letter-section-title::before,
+.letter-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #C4956A, transparent);
+}
+.hub-letter-paper {
+  position: relative;
+  background: #FFFDF4;
+  border-radius: 4px;
+  padding: 48px 56px 56px;
+  box-shadow:
+    0 2px 8px rgba(44,24,16,0.10),
+    0 0 0 1px rgba(196,149,106,0.2),
+    inset 0 0 60px rgba(255,240,200,0.3);
+  font-family: 'ZCOOL KuaiLe', cursive;
+  line-height: 2.2;
+  color: #3a2a1a;
+  min-height: 280px;
+  overflow: hidden;
+}
+.hub-letter-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent calc(2.2em - 1px),
+    rgba(196,149,106,0.18) calc(2.2em - 1px),
+    rgba(196,149,106,0.18) 2.2em
+  );
+  background-size: 100% 2.2em;
+  background-position: 0 48px;
+  pointer-events: none;
+}
+.hub-letter-paper::after {
+  content: '';
+  position: absolute;
+  left: 40px;
+  top: 0;
+  bottom: 0;
+  width: 1.5px;
+  background: rgba(220,80,60,0.25);
+  pointer-events: none;
+}
+.letter-to {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #2C1810;
+  margin-bottom: 0.5em;
+  opacity: 0;
+}
+.letter-body {
+  font-size: 1.05rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.letter-body .letter-char {
+  opacity: 0;
+  display: inline;
+}
+.letter-footer {
+  margin-top: 1.5em;
+  text-align: right;
+  font-size: 1rem;
+  color: #7a5a3a;
+  opacity: 0;
+}
+.letter-seal {
+  position: absolute;
+  bottom: 24px;
+  right: 32px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(200,60,40,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'ZCOOL KuaiLe', cursive;
+  font-size: 11px;
+  color: rgba(200,60,40,0.6);
+  text-align: center;
+  line-height: 1.3;
+  transform: rotate(-15deg);
+  opacity: 0;
+  letter-spacing: 1px;
+}
+.letter-no-letter {
+  text-align: center;
+  padding: 40px 20px;
+  color: #aaa;
+  font-size: 1rem;
+  font-family: 'ZCOOL KuaiLe', cursive;
+}
+@keyframes letterFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -230,6 +349,18 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
       <div class="card-title">BATI人格测试</div>
       <div class="card-desc">商分人 · 你是哪种打工生物？</div>
       <div class="card-status locked-st" id="hub-status-3">🔒 通关Game 2解锁</div>
+    </div>
+  </div>
+  <div class="letter-section" id="letter-section">
+    <div class="letter-section-title">✉️ 薛师傅的神秘寄语</div>
+    <div class="hub-letter-paper" id="letter-paper">
+      <div class="letter-no-letter" id="letter-placeholder">
+        选择角色后，你的专属寄语将在此呈现 ✨
+      </div>
+      <div id="letter-to" class="letter-to" style="display:none;"></div>
+      <div id="letter-body" class="letter-body" style="display:none;"></div>
+      <div id="letter-footer" class="letter-footer" style="display:none;"></div>
+      <div id="letter-seal" class="letter-seal" style="display:none;">薛师傅<br>亲启</div>
     </div>
   </div>
 </div>
@@ -421,6 +552,32 @@ const CHARACTERS = [
   { id:22, name:'罗雨婧', at:'@罗雨婧', title:'成员',              sig:'对抗AI和人生的双重幻觉',                         img:AVATAR+'luoyujing.png',     color:'#8E44AD', short:'雨婧' },
 ];
 
+// ============ 薛师傅神秘寄语数据 ============
+const LETTERS = {
+  '林梦瑶': '哈喽梦瑶！作为实习生真的不是很敢和leader交流哈哈哈哈，但是线下经常能看到你工作时的井井有条与逻辑严密！祝你工作顺利，平安顺遂~',
+  '柯晗': '哈喽柯老师！首先要说，我和桢桢都很认可你的穿搭！实在是太青春！而且你工作时一丝不苟，非常帅气~不工作的时候是个很有趣的人！祝柯老师工作业绩upup！身体健康！天天开心！',
+  '徐妍妮': '妍妮姐~面试的时候就给我留下非常深刻的印象，太—————美丽了，而且太chill了，和我以往见过的面试官都不一样！我已推荐给我的同学们，说我有一个非常美丽的+2，字节商分范冰冰+迪丽热巴+古力娜扎，祝你工作顺利！！！',
+  '徐储同': '储同哥~第一印象是好帅好精致，后来发现果然好帅好精致！虽然没有和你合作过，但是根据薛桢桢和朱倩的反馈，你工作起来也是一丝不苟，条理清晰，帅也。祝你工作压力小一点，以后去新西兰玩也不用担心没有油了~',
+  '杨徉': '杨哥！这段时间感谢你的照顾！杨必应——有求必应！完全像大哥一般！朱倩之前问我杨哥是不是年薪百万，怎么回家那么晚哈哈哈。希望杨哥工作压力小一点~身体重要哇！祝杨哥工作顺利~万事顺遂！',
+  '傅铖茜': '铖茜姐！感谢你每次吃饭的时候都能讲一些有趣的事情以及《职场秘闻》，btw你家真的很大，缺保安/保洁/下水道师傅都可以call我，管饭就行~薛部长以后要是真的当官了，必须给铖茜姐狠狠提高退休金，5w一月上不封顶！祝铖茜姐工作/装修/带娃都顺利哇！',
+  '张路晴': '哈喽路晴姐！别的话不必多言，都在你的美貌里了！气质与美貌并存————祝你工作顺利！！职场情场都得意！',
+  '朱矜颖': '矜颖姐~中国好带教！！！感谢矜颖姐包容我在工作中犯的一些错误，薛师傅有时候确实比较蠢！感谢矜颖姐一面给我过了，让我能进字节跳动，来到咱们这么好的部门！！！感谢矜颖姐给我北京出差的机会（让我能公费旅游一下，真的爽到我了）这简直是我最开心的一段实习，感谢感谢矜颖姐，我要把这个中国好带教推荐给所有同学！而且！矜颖姐本来可以靠脸吃饭，偏偏工作能力又是如此之强！每次开双周会我都在想，要是让我来主持这两个大周会，我估计早都晕倒了，佩服佩服！希望矜颖姐多多开心（开心果会给你好运），淡淡的就会顺顺的~祝矜颖姐一直顺顺的！',
+  '唐子健': '哈喽子健姐~先提前祝你新婚快乐呀！我和薛桢桢一致认为你是一个非常可爱的姐，完全看不出来工作了这么久，感觉刚上大学一般！（此时一名沧桑的薛师傅路过），祝你工作顺利！再次提前祝你新婚快乐！！！',
+  '张艺骞': '哈喽艺骞哥~你太帅了。我其实一直偷偷叫你商分hotnerd，那种理工男的气质无人能比！上次咱们组聚餐我发现你也是个非常有趣的人！祝你工作一直顺利~感情流动起来哈哈哈哈哈哈！',
+  '翟祎玮': '祎玮姐！有时候能感觉到你的工作压力也很大！也许是对接了不熟悉的行业？没关系！慢慢来！不要给自己太大压力。我只想说，多吃点好的！不要啥都听教练的！自己吃开心了最重要~祝你工作顺利！',
+  '薛桢桢': '这个老薛桢桢，一转眼飞到京东去当实习生了，字节跳动的叛徒！谢谢你老桢桢，我每次不管怎么mean你都不生气，你的情绪感知能力很强，感情也很细腻，你是个好人啊哈哈哈哈哈哈哈哈哈哈，祝你在京东好好干！暑期实习多拿几个offer，秋招再多拿几个ssp，等我秋招罩着我！祝你顺利！',
+  'lexi': '哈喽lexi！你每次来上海出差我和薛桢桢（我旁边的实习生）都被惊艳。不仅长得太美！而且太会穿！祝你工作生活都顺利！',
+  '游璐': '哈喽游璐姐~虽然我们的几次交流都是关于布置作业（捂脸哭），但是谢谢你每次都能按时填写文档！！！祝你工作顺利，天天开心呀！',
+  '朱顺莱': '顺莱姐~老乡见老乡，两眼泪汪汪（复旦版），祝福美丽的顺莱姐，工作顺利顺利再顺利！btw我也想有朝一日住在陆家嘴滨江。',
+  '李萌': '李萌姐！不知道你的腿有没有好点~上次聚餐你的腿好像扭伤了？注意安全耶！祝你身体健康，工作顺利~',
+  '侯雨冰': '哈喽雨冰姐！自北京一别再难相见！你都想不到我从北京回去是怎么和别的实习生夸你的！美丽、温柔、工作强！不过骚瑞for我有时候工作犯傻，感谢你不嫌弃！祝你不当臭皮匠，直接当诸葛亮！工作顺利！！',
+  '许斯佳': '哈喽斯佳，毕业快乐！祝贺你正式变成商分的一员~祝你有一段美好难忘的第一份正式工作的经历！',
+  '李欣然': '哈喽欣然姐~虽然交流不多，但是我能感觉到你工作的认真与严密！但是希望你不要给自己太大压力了~工作生活都要拿捏！祝你工作顺利！在字节跳动有一段难忘美好的经历！',
+  '田宇洋': '宇洋哥~什么时候结婚呀！我肯定赶不上了，先提前——祝你新婚快乐！也许以后健身的事情还要多咨询你哈哈哈哈哈哈！祝你工作顺利！',
+  '朱倩': '你好朱倩，骚瑞平时对你太mean了，我就是这样一个剑人哟~言归正传，祝你在商分的实习顺利，这是一个非常好的部门，请尽情享受这段实习经历吧！祝你暑期offer拿到手软！！秋招成为offer收割机！30w offer只是你的保底哟！加油！！！',
+  '罗雨婧': '哈喽雨婧，我对你的第一印象就是你太帅了。发现你搞乐队以后更帅了！祝你在字节有一段难忘的实习经历！秋招顺利！！！',
+};
+
 // ============ ASSET PRELOADER ============
 const ASSETS = {};
 const CHARACTERS_LIST = ['林梦瑶','翟祎玮','傅铖茜','柯晗','唐子健','徐储同','徐妍妮','薛维瀚','薛桢桢','杨徉','张路晴','张艺骞','朱矜颖','侯雨冰','李萌','李欣然','田宇洋','许斯佳','游璐','朱顺莱','lexi','朱倩','罗雨婧'];
@@ -565,6 +722,95 @@ function confirmCharacter() {
   if (G.charId === null) return;
   updateHubCards();
   showScreen('hub');
+  renderLetterForChar();
+}
+
+function renderLetterForChar() {
+  const selectedChar = CHARACTERS[G.charId];
+  if (selectedChar) { renderLetter(selectedChar.name); }
+}
+
+function renderLetter(charName) {
+  const letterText = LETTERS[charName];
+  const toEl    = document.getElementById('letter-to');
+  const bodyEl  = document.getElementById('letter-body');
+  const footerEl= document.getElementById('letter-footer');
+  const sealEl  = document.getElementById('letter-seal');
+  const placeholder = document.getElementById('letter-placeholder');
+
+  if (!toEl) return;
+
+  if (!letterText) {
+    if (placeholder) {
+      placeholder.style.display = 'block';
+      placeholder.textContent = '薛师傅还没来得及给你写信……也许是因为太忙了🙈';
+    }
+    toEl.style.display = 'none';
+    bodyEl.style.display = 'none';
+    footerEl.style.display = 'none';
+    sealEl.style.display = 'none';
+    return;
+  }
+
+  if (placeholder) placeholder.style.display = 'none';
+
+  toEl.style.display = 'block';
+  toEl.textContent = `To @${charName}，`;
+  toEl.style.opacity = '0';
+
+  bodyEl.style.display = 'block';
+  bodyEl.innerHTML = '';
+
+  footerEl.style.display = 'block';
+  footerEl.textContent = '江湖有缘再见！\nby 神秘的薛师傅';
+  footerEl.style.opacity = '0';
+
+  sealEl.style.display = 'flex';
+  sealEl.style.opacity = '0';
+
+  let delay = 200;
+
+  setTimeout(() => {
+    toEl.style.transition = 'opacity 0.6s ease';
+    toEl.style.opacity = '1';
+  }, delay);
+  delay += 700;
+
+  const chars = letterText.split('');
+  chars.forEach((ch, i) => {
+    setTimeout(() => {
+      const span = document.createElement('span');
+      span.className = 'letter-char';
+      span.textContent = ch;
+      bodyEl.appendChild(span);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          span.style.transition = 'opacity 0.15s ease';
+          span.style.opacity = '1';
+        });
+      });
+      if (i % 20 === 0) {
+        const section = document.getElementById('letter-section');
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }, delay + i * 40);
+  });
+  delay += chars.length * 40 + 400;
+
+  setTimeout(() => {
+    footerEl.style.transition = 'opacity 0.8s ease';
+    footerEl.style.opacity = '1';
+  }, delay);
+  delay += 600;
+
+  setTimeout(() => {
+    sealEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    sealEl.style.opacity = '1';
+    sealEl.style.transform = 'rotate(-15deg) scale(1.1)';
+    setTimeout(() => {
+      sealEl.style.transform = 'rotate(-15deg) scale(1)';
+    }, 300);
+  }, delay);
 }
 
 // ============ GAME HUB ============
@@ -672,7 +918,7 @@ async function generateEnding(){
   $('ending-reactions').innerHTML=reactions.map((r,i)=>`<div class="react-item" style="animation-delay:${i*0.15}s"><strong>${r.at}</strong>：${r.text}</div>`).join('');
 }
 function showLetter(){ showScreen('letter'); const c=G.charId!==null?CHARACTERS[G.charId]:{name:'侦探',at:'@侦探'}; $('letter-content').innerHTML=`<div class="dear">亲爱的 ${c.name}：</div><p>感谢你参与《周报失踪之谜》——商分·职场剧本杀。</p><p>在这个周四的夜晚，你化身为${c.at}，穿梭于工位、茶水间、会议室与电梯口之间，拼凑出真相的碎片。</p><p>周报虽然消失了，但故事里的每一个人……都真实地活在这些文字里。</p><p>职场有职场的规则，但更有职场的温度。</p><p>希望你喜欢这个故事。保持好奇心，下次再见。</p><div class="sign-off">—— 商分 · 全员敬上</div>`; }
-function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); }
+function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); renderLetterForChar(); }
 function resetGame(){ G.charId=null; G.clues={}; G.dialogues={}; G.yangRound=0; pickedSuspect=null; G.unlocked=new Set(['desk']); G.areaClicks={}; G._gameLoopRunning=false; buildCharGrid(); $('btn-char-confirm').disabled=true; showScreen('api'); updateClueUI(); }
 
 // ============================================================================
@@ -976,7 +1222,7 @@ function endMinerRound(won){
   }
 }
 function restartMiner(){ initMinerGame(); }
-function endMinerGame(){ showScreen('hub'); }
+function endMinerGame(){ showScreen('hub'); renderLetterForChar(); }
 function startMinerGame(){ showScreen('miner'); showMinerGuide(); }
 document.addEventListener('keydown',e=>{ if(G.screen!=='miner') return; if(e.key===' '||e.code==='Space'){ e.preventDefault(); shootMinerHook(); } });
 document.addEventListener('click',e=>{ if(G.screen!=='miner') return; if(e.target.closest('.btn')) return; if($('miner-guide-overlay').style.display==='flex') return; shootMinerHook(); });
