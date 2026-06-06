@@ -787,6 +787,7 @@ function confirmCharacter() {
   showScreen('hub');
 }
 
+let _letterRenderId = 0; // 防止信件渲染竞态
 function openLetter() {
   showScreen('hub-letter');
   // 重置信纸为初始状态
@@ -806,6 +807,9 @@ function openLetter() {
 }
 
 function renderLetter(charName) {
+  // 取消上一次未完成的渲染
+  _letterRenderId++;
+  const renderId = _letterRenderId;
   const letterText = LETTERS[charName];
   const toEl    = document.getElementById('letter-to');
   const bodyEl  = document.getElementById('letter-body');
@@ -847,6 +851,7 @@ function renderLetter(charName) {
   let delay = 200;
 
   setTimeout(() => {
+    if (_letterRenderId !== renderId) return;
     toEl.style.transition = 'opacity 0.6s ease';
     toEl.style.opacity = '1';
   }, delay);
@@ -855,6 +860,7 @@ function renderLetter(charName) {
   const chars = letterText.split('');
   chars.forEach((ch, i) => {
     setTimeout(() => {
+      if (_letterRenderId !== renderId) return;
       const span = document.createElement('span');
       span.className = 'letter-char';
       span.textContent = ch;
@@ -874,12 +880,14 @@ function renderLetter(charName) {
   delay += chars.length * 40 + 400;
 
   setTimeout(() => {
+    if (_letterRenderId !== renderId) return;
     footerEl.style.transition = 'opacity 0.8s ease';
     footerEl.style.opacity = '1';
   }, delay);
   delay += 600;
 
   setTimeout(() => {
+    if (_letterRenderId !== renderId) return;
     sealEl.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     sealEl.style.opacity = '1';
     sealEl.style.transform = 'rotate(-15deg) scale(1.1)';
