@@ -694,20 +694,39 @@ function isAreaUnlocked(areaId) { return G.unlocked.has(areaId); }
 
 // ============ API CALL ============
 async function callLLM(systemPrompt, userMessage) {
-  const PROXY_URL = '/api/chat';
+  // ★★★ 在这里填入你的 DeepSeek API Key（格式 sk-xxxxxxxx）★★★
+  const API_KEY = 'sk-你的DeepSeek-API-Key填这里';
+  const API_URL = 'https://api.deepseek.com/chat/completions';
+
   try {
     const messages = [];
     if (systemPrompt) messages.push({ role: 'system', content: systemPrompt + TONE_RULES });
     messages.push({ role: 'user', content: userMessage });
-    const resp = await fetch(PROXY_URL, {
+
+    const resp = await fetch(API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'deepseek-chat', max_tokens: 600, messages })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + API_KEY,
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        max_tokens: 600,
+        messages,
+      })
     });
-    if (!resp.ok) { console.error(await resp.text()); return '（网络错误，请稍后重试）'; }
+
+    if (!resp.ok) {
+      console.error('API请求失败:', resp.status);
+      return '（网络错误，请稍后重试）';
+    }
+
     const data = await resp.json();
     return data.choices?.[0]?.message?.content?.trim() || '（内容生成失败）';
-  } catch(e) { console.error('callLLM error:', e); return '（网络错误，请稍后重试）'; }
+  } catch (e) {
+    console.error('callLLM error:', e);
+    return '（网络错误，请稍后重试）';
+  }
 }
 
 function enterGame() { showScreen('char'); buildCharGrid(); }
