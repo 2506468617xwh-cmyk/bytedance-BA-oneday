@@ -308,6 +308,30 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* 全局返回选角按钮 */
+.global-back-btn {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 300;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(6px);
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: .85rem;
+  font-family: 'Noto Sans SC', sans-serif;
+  color: var(--text);
+  cursor: pointer;
+  display: none;
+  transition: all .15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.global-back-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
 </style>
 </head>
 <body>
@@ -494,8 +518,8 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
 <div id="screen-bati" class="screen" style="justify-content:flex-start !important;padding:20px;gap:0;min-height:100vh;background:var(--bg);">
 </div>
 
-<!-- SCREEN LETTER -->
-<div id="screen-letter" class="screen" style="justify-content:flex-start !important;padding:30px 20px;gap:0;min-height:100vh;background:var(--bg);">
+<!-- SCREEN HUB-LETTER (薛师傅寄语) -->
+<div id="screen-hub-letter" class="screen" style="justify-content:flex-start !important;padding:30px 20px;gap:0;min-height:100vh;background:var(--bg);">
   <div style="width:100%;max-width:680px;text-align:center;margin-bottom:24px;">
     <span style="font-family:'ZCOOL KuaiLe';font-size:1.4rem;color:var(--text);">✉️ 薛师傅的神秘寄语</span>
   </div>
@@ -657,10 +681,26 @@ const TONE_RULES = `\n\n【对话规则】称呼他人时只使用名字的后�
 
 // ============ HELPERS ============
 function $(id) { return document.getElementById(id); }
+function goToCharSelect() {
+  if (GAME_LOOP_ID) { cancelAnimationFrame(GAME_LOOP_ID); GAME_LOOP_ID = null; }
+  if (minerRAF) { cancelAnimationFrame(minerRAF); minerRAF = null; }
+  GAME_PAUSED = false;
+  showScreen('char');
+  buildCharGrid();
+}
 function showScreen(id) {
+  // 离开主游戏时取消游戏循环
+  if (G.screen === 'main' && id !== 'main') {
+    if (GAME_LOOP_ID) { cancelAnimationFrame(GAME_LOOP_ID); GAME_LOOP_ID = null; }
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = $('screen-'+id); if (el) el.classList.add('active');
   G.screen = id;
+  // 全局返回按钮：api/char/loading 不显示，其他页面都显示
+  const backBtn = $('global-back-btn');
+  if (backBtn) {
+    backBtn.style.display = (id === 'api' || id === 'char' || id === 'loading-assets') ? 'none' : 'block';
+  }
   if (id === 'main') { initGame1Canvas(); }
 }
 function toast(msg, ms=2000) { const t = $('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, ms); }
@@ -748,7 +788,7 @@ function confirmCharacter() {
 }
 
 function openLetter() {
-  showScreen('letter');
+  showScreen('hub-letter');
   // 重置信纸为初始状态
   const toEl = document.getElementById('letter-to');
   const bodyEl = document.getElementById('letter-body');
@@ -1456,5 +1496,6 @@ function init(){
 }
 init();
 </script>
+<button class="global-back-btn" id="global-back-btn" onclick="goToCharSelect()">← 返回选角</button>
 </body>
 </html>
