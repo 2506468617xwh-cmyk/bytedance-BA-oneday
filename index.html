@@ -694,21 +694,15 @@ function isAreaUnlocked(areaId) { return G.unlocked.has(areaId); }
 
 // ============ API CALL ============
 async function callLLM(systemPrompt, userMessage) {
-  // ★★★ 在这里填入你的 DeepSeek API Key（格式 sk-xxxxxxxx）★★★
-  const API_KEY = 'sk-你的DeepSeek-API-Key填这里';
-  const API_URL = 'https://api.deepseek.com/chat/completions';
-
+  const PROXY_URL = '/api/chat';
   try {
     const messages = [];
-    if (systemPrompt) messages.push({ role: 'system', content: systemPrompt + TONE_RULES });
+    if (systemPrompt) messages.push({ role: 'system', content: systemPrompt });
     messages.push({ role: 'user', content: userMessage });
 
-    const resp = await fetch(API_URL, {
+    const resp = await fetch(PROXY_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + API_KEY,
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'deepseek-chat',
         max_tokens: 600,
@@ -717,7 +711,7 @@ async function callLLM(systemPrompt, userMessage) {
     });
 
     if (!resp.ok) {
-      console.error('API请求失败:', resp.status);
+      console.error('代理请求失败:', resp.status);
       return '（网络错误，请稍后重试）';
     }
 
