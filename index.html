@@ -936,7 +936,26 @@ const CLUE_DEFS = {
 };
 function addClue(sceneId) {
   if (G.clues[sceneId]) return;
-  G.clues[sceneId] = CLUE_DEFS[sceneId]; updateClueUI();
+  const def = {...CLUE_DEFS[sceneId]};
+  // 动态替换线索中的NPC名字
+  if (sceneId === 'pantry') {
+    const npcs = ACTIVE_NPCS.filter(n => n.area === 'pantry').map(n => n.name);
+    if (npcs.length >= 2) {
+      def.text = `${npcs[0]}证实：桢桢离职前说要帮大家"备份一下"`;
+      def.detail = `在茶水间偷听到${npcs[0]}和${npcs[1]}的对话——${npcs[0]}说桢桢离职当天下午特地说要帮大家把周报备份到云端，是好意。但操作结果怎么样，没人跟进过。`;
+    } else if (npcs.length === 1) {
+      def.text = `${npcs[0]}提到：桢桢离职前说要帮大家"备份一下"`;
+      def.detail = `在茶水间听到${npcs[0]}提到桢桢离职当天下午特地说要帮大家把周报备份到云端，是好意。但操作结果怎么样，没人跟进过。`;
+    }
+  }
+  if (sceneId === 'elevator') {
+    const npc = ACTIVE_NPCS.find(n => n.area === 'elevator');
+    if (npc) {
+      def.text = `${npc.name}透露：桢桢走之前在电梯里说"手机操作好麻烦"`;
+      def.detail = `${npc.name}在电梯口说，桢桢离职当天走的时候在电梯里还在划手机，嘀咕了一句"手机操作文件好麻烦，不知道有没有搞好"。当时没人在意，现在想想……`;
+    }
+  }
+  G.clues[sceneId] = def; updateClueUI();
   toast('🔍 获得新线索！', 2000);
   const next = UNLOCK_CHAIN[sceneId];
   if (next && !G.unlocked.has(next)) { unlockArea(next); setTimeout(() => { $('game-hint').textContent = UNLOCK_LABELS[next] + ' 已解锁，快去调查！'; }, 2000); }
@@ -975,15 +994,15 @@ async function sceneDeskPhone(btn){ btn.disabled=true;btn.textContent='📱'; co
 async function sceneDeskNote(btn){ btn.disabled=true;btn.textContent='📝'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一张贴在工位上的便利贴内容，是一位同事看到周报出问题后写给大家的提醒，语气自然克制，50字以内。','写一张便利贴。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
 async function sceneDeskCup(btn){ btn.disabled=true;btn.textContent='🥤'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请写一句印在马克杯上的商分团队slogan，幽默克制，15字以内。','水杯上写了什么？'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">🥤 水杯上印着：「${text||'...'}」</div>`; recordClick('desk'); }
 async function sceneDeskFolder(btn){ btn.disabled=true;btn.textContent='📁'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段共享盘文件列表。显示薛桢桢在17:02创建了一个名为"周报备份"的文件夹，但文件夹大小为0KB。同时列出其他同事的正常文件记录。格式像文件系统列表，简洁干练，150字以内。','生成共享盘内容。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
-async function sceneDeskPrinter(btn){ btn.disabled=true;btn.textContent='🖨️'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段打印机日志，列出当晚3-4条打印记录，涉及@柯晗、@朱矜颖、@张路晴，时间在20:00-23:00之间，内容与周报相关但无异常。格式像打印机日志，简洁，不做判断。','生成打印机记录。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
-function buildPantryScene(box){ box.innerHTML+=`<p class="scene-desc">储同和矜颖正在茶水间小声聊天，似乎在讨论什么……你悄悄靠近。</p><button class="interact-btn" onclick="scenePantryListen(this)" style="margin-bottom:12px;">👂 偷听对话</button><div id="scene-pantry-output"></div>`; }
-async function scenePantryListen(btn){ btn.disabled=true;btn.textContent='👂'; const out=$('scene-pantry-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段对话：@徐储同 和 @朱矜颖 在茶水间小声讨论周报失踪的事。储同提到桢桢离职前说要帮大家备份文件，朱矜颖说她当时还觉得很贴心。两人都没有想到是出了问题。对话语气自然，不要直接点出是桢桢删的，但让玩家感觉"备份这件事有点可疑"。150字以内。','生成茶水间对话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('pantry'); }
-function buildMeetingScene(box){ box.innerHTML+=`<p class="scene-desc">会议室白板上留着上次开会的痕迹，诚茜姐的笔记本还在...</p><div class="interact-group"><button class="interact-btn" onclick="sceneMeetingNote(this)">📓 笔记本</button><button class="interact-btn" onclick="sceneMeetingBoard(this)">📋 白板</button></div><div id="scene-meeting-output"></div>`; }
-async function sceneMeetingNote(btn){ btn.disabled=true;btn.textContent='📓'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('请生成一段工作笔记内容，是@傅铖茜的手写笔记风格：内容主要是当天的工作安排，最后有一行备注："桢桢说已备份周报，记得确认一下。"语气一丝不苟，信息量足，顺带洗清傅铖茜的嫌疑。150字以内。','生成工作笔记。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
-async function sceneMeetingBoard(btn){ btn.disabled=true;btn.textContent='📋'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const text=await callLLM('你是傅铖茜（@傅铖茜），行业组成员，工作一丝不苟。会议室白板上还有你之前写的会议纪要。请生成一段白板笔记，内容周报提交规范提醒。30字以内。','白板上写了什么？'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
-function buildElevatorScene(box){ G.yangRound=0; box.innerHTML+=`<p class="scene-desc">杨哥正在等电梯，看起来心事重重...</p><button class="interact-btn" id="btn-yang-talk" onclick="sceneElevatorTalk(this)" style="margin-bottom:12px;">💬 搭话</button><div id="scene-elevator-output"></div>`; }
-async function sceneElevatorTalk(btn){ btn.disabled=true;btn.textContent='💬'; const out=$('scene-elevator-output'); if(G.yangRound===0){ const l=createLoadingEl();out.appendChild(l); const text=await callLLM('你在扮演@杨徉，行业组成员，同事们叫你"杨哥"。现在正在电梯口等电梯，有同事（玩家）过来搭话问周报失踪的事。你回忆起桢桢离职当天在电梯里说过"手机操作文件好麻烦"，你当时没在意。说话风格沉稳、笑呵呵，不经意间透露出桢桢当天确实在用手机操作文件这个信息。注意：你是杨哥，不要叫对方"小杨"。不要直接说"是桢桢干的"，说话留有余地。100字以内。','电梯口搭话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; if(text){ G.yangRound=1; setTimeout(()=>{ $('scene-content').insertAdjacentHTML('beforeend',`<div class="chat-input-row" id="yang-chat-row"><input type="text" id="yang-chat-input" placeholder="输入你想问杨哥的话..." onkeydown="if(event.key==='Enter')sceneElevatorReply()" /><button class="interact-btn" onclick="sceneElevatorReply()">发送</button></div>`); },300); } } }
-async function sceneElevatorReply(){ const input=$('yang-chat-input'); if(!input)return; const msg=input.value.trim(); if(!msg)return; input.disabled=true; const out=$('scene-elevator-output'); out.innerHTML+=`<p style="color:var(--accent);margin-top:8px;"><strong>你：</strong>${msg}</p>`; const l=createLoadingEl();out.appendChild(l);out.scrollTop=out.scrollHeight; const text=await callLLM(`你在扮演@杨徉，行业组成员，同事们叫你"杨哥"。在电梯口聊天，对方（玩家，你的同事）问："${msg}"。你语气沉稳、笑呵呵地回复，不经意间透露桢桢离职当天在电梯里用过手机处理文件。注意：你是杨哥，不要叫对方"小杨"或其他名字。每次回复80字以内。`,''); removeLoadingEl(l); out.innerHTML+=`<p style="margin-top:8px;"><strong>杨哥：</strong>${text||'（无响应）'}</p>`;out.scrollTop=out.scrollHeight; recordClick('elevator'); input.disabled=false;input.value=''; G.yangRound++; if(G.yangRound>=3){ const row=document.getElementById('yang-chat-row');if(row)row.remove(); out.innerHTML+='<p style="color:#888;margin-top:8px;">杨哥的电梯到了，他挥了挥手走进电梯。</p>'; } }
+async function sceneDeskPrinter(btn){ btn.disabled=true;btn.textContent='🖨️'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const deskChars=ACTIVE_NPCS.filter(n=>n.area==='desk').map(n=>CHARACTERS[n.cid].at); const extraChars=ACTIVE_NPCS.filter(n=>n.area!=='desk').slice(0,2).map(n=>CHARACTERS[n.cid].at); const allRefs=[...deskChars,...extraChars].join('、'); const text=await callLLM(`请生成一段打印机日志，列出当晚3-4条打印记录，涉及${allRefs}，时间在20:00-23:00之间，内容与周报相关但无异常。格式像打印机日志，简洁，不做判断。`,'生成打印机记录。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
+function buildPantryScene(box){ const npcs=ACTIVE_NPCS.filter(n=>n.area==='pantry').map(n=>n.name); const desc=npcs.length===2?`${npcs[0]}和${npcs[1]}正在茶水间小声聊天，似乎在讨论什么……你悄悄靠近。`:npcs.length===1?`${npcs[0]}正在茶水间，似乎在自言自语……`:'茶水间空荡荡的，但似乎刚有人来过。'; box.innerHTML+=`<p class="scene-desc">${desc}</p><button class="interact-btn" onclick="scenePantryListen(this)" style="margin-bottom:12px;">👂 偷听对话</button><div id="scene-pantry-output"></div>`; }
+async function scenePantryListen(btn){ btn.disabled=true;btn.textContent='👂'; const out=$('scene-pantry-output'); const l=createLoadingEl();out.appendChild(l); const npcs=ACTIVE_NPCS.filter(n=>n.area==='pantry').map(n=>CHARACTERS[n.cid]); const names=npcs.map(c=>c.at).join(' 和 '); const prompt=npcs.length>=2?`请生成一段对话：${npcs[0].at} 和 ${npcs[1].at} 在茶水间小声讨论周报失踪的事。${npcs[0].at}提到桢桢离职前说要帮大家备份文件，${npcs[1].at}说她当时还觉得很贴心。两人都没有想到是出了问题。对话语气自然，不要直接点出是桢桢删的，但让玩家感觉"备份这件事有点可疑"。150字以内。`:`请生成一段独白：${npcs[0]?npcs[0].at:'某人'} 在茶水间喃喃自语关于周报失踪的事情。语气自然。100字以内。`; const text=await callLLM(prompt,'生成茶水间对话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('pantry'); }
+function buildMeetingScene(box){ const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{name:'某人',at:'@某人'}; box.innerHTML+=`<p class="scene-desc">会议室白板上留着上次开会的痕迹${npc?'，'+c.name+'的笔记本还在...':'，但似乎很久没人来了...'}</p><div class="interact-group"><button class="interact-btn" onclick="sceneMeetingNote(this)">📓 笔记本</button><button class="interact-btn" onclick="sceneMeetingBoard(this)">📋 白板</button></div><div id="scene-meeting-output"></div>`; }
+async function sceneMeetingNote(btn){ btn.disabled=true;btn.textContent='📓'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{at:'@傅铖茜',name:'傅铖茜'}; const text=await callLLM(`请生成一段工作笔记内容，是${c.at}的手写笔记风格：内容主要是当天的工作安排，最后有一行备注："桢桢说已备份周报，记得确认一下。"语气一丝不苟，信息量足，顺带洗清${c.name}的嫌疑。150字以内。`,'生成工作笔记。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
+async function sceneMeetingBoard(btn){ btn.disabled=true;btn.textContent='📋'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{at:'@傅铖茜',name:'傅铖茜'}; const text=await callLLM(`你是${c.name}（${c.at}），工作一丝不苟。会议室白板上还有你之前写的会议纪要。请生成一段白板笔记，内容周报提交规范提醒。30字以内。`,'白板上写了什么？'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
+function buildElevatorScene(box){ G.yangRound=0; const npc=ACTIVE_NPCS.find(n=>n.area==='elevator'); const c=npc?CHARACTERS[npc.cid]:{name:'杨哥',short:'杨哥'}; const nick=c.short||c.name; box.innerHTML+=`<p class="scene-desc">${nick}正在等电梯，看起来心事重重...</p><button class="interact-btn" id="btn-yang-talk" onclick="sceneElevatorTalk(this)" style="margin-bottom:12px;">💬 搭话</button><div id="scene-elevator-output"></div>`; }
+async function sceneElevatorTalk(btn){ btn.disabled=true;btn.textContent='💬'; const out=$('scene-elevator-output'); if(G.yangRound===0){ const npc=ACTIVE_NPCS.find(n=>n.area==='elevator'); const c=npc?CHARACTERS[npc.cid]:{at:'@杨徉',name:'杨徉',short:'杨哥'}; const nick=c.short||c.name; const l=createLoadingEl();out.appendChild(l); const text=await callLLM(`你在扮演${c.at}，行业组成员，同事们叫你"${nick}"。现在正在电梯口等电梯，有同事（玩家）过来搭话问周报失踪的事。你回忆起桢桢离职当天在电梯里说过"手机操作文件好麻烦"，你当时没在意。说话风格沉稳、笑呵呵，不经意间透露出桢桢当天确实在用手机操作文件这个信息。注意：你是${nick}，不要叫对方不合适的名字。不要直接说"是桢桢干的"，说话留有余地。100字以内。`,'电梯口搭话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; if(text){ G.yangRound=1; setTimeout(()=>{ $('scene-content').insertAdjacentHTML('beforeend',`<div class="chat-input-row" id="yang-chat-row"><input type="text" id="yang-chat-input" placeholder="输入你想问${nick}的话..." onkeydown="if(event.key==='Enter')sceneElevatorReply()" /><button class="interact-btn" onclick="sceneElevatorReply()">发送</button></div>`); },300); } } }
+async function sceneElevatorReply(){ const input=$('yang-chat-input'); if(!input)return; const msg=input.value.trim(); if(!msg)return; input.disabled=true; const npc=ACTIVE_NPCS.find(n=>n.area==='elevator'); const c=npc?CHARACTERS[npc.cid]:{at:'@杨徉',name:'杨徉',short:'杨哥'}; const nick=c.short||c.name; const out=$('scene-elevator-output'); out.innerHTML+=`<p style="color:var(--accent);margin-top:8px;"><strong>你：</strong>${msg}</p>`; const l=createLoadingEl();out.appendChild(l);out.scrollTop=out.scrollHeight; const text=await callLLM(`你在扮演${c.at}，行业组成员，同事们叫你"${nick}"。在电梯口聊天，对方（玩家，你的同事）问："${msg}"。你语气沉稳、笑呵呵地回复，不经意间透露桢桢离职当天在电梯里用过手机处理文件。注意：你是${nick}，不要叫对方不合适的名字。每次回复80字以内。`,''); removeLoadingEl(l); out.innerHTML+=`<p style="margin-top:8px;"><strong>${nick}：</strong>${text||'（无响应）'}</p>`;out.scrollTop=out.scrollHeight; recordClick('elevator'); input.disabled=false;input.value=''; G.yangRound++; if(G.yangRound>=3){ const row=document.getElementById('yang-chat-row');if(row)row.remove(); out.innerHTML+=`<p style="color:#888;margin-top:8px;">${nick}的电梯到了，${c.short==='杨徉'?'他':'TA'}挥了挥手走进电梯。</p>`; } }
 function buildFeishuScene(box){ box.innerHTML+=`<p class="scene-desc">系统后台，删除日志一览无余...</p><div class="feishu-log"><div class="log-entry"><span class="log-time">16:58</span> 薛桢桢 &nbsp; 查看文件：Q2周报汇总.xlsx</div><div class="log-entry"><span class="log-time">17:02</span> 薛桢桢 &nbsp; 移动文件：Q2周报汇总.xlsx → 共享盘/备份</div><div class="log-entry"><span class="log-time">21:15</span> 张路晴 &nbsp; 编辑文件：Q2周报汇总.xlsx &nbsp;<span style="color:#e85d26;font-size:.75rem;">⚠ 文件已无法找到</span></div><div class="log-entry"><span class="log-time">21:32</span> 傅铖茜 &nbsp; 查看文件：Q2周报汇总.xlsx &nbsp;<span style="color:#e85d26;font-size:.75rem;">⚠ 文件已无法找到</span></div><div class="log-entry"><span class="log-time">22:10</span> 柯晗 &nbsp;&nbsp;&nbsp; 查看文件：Q2周报汇总.xlsx &nbsp;<span style="color:#e85d26;font-size:.75rem;">⚠ 文件已无法找到</span></div><div class="log-entry highlight"><span class="log-time">22:47</span> ⚠ 薛桢桢（iPhone）删除文件：Q2周报汇总.xlsx &nbsp;｜ 备份文件大小：0KB</div><div class="log-entry"><span class="log-time">22:49</span> 唐子健 &nbsp; 查看文件：隐私合规检查表.xlsx</div></div>`; recordClick('feishu'); $('game-hint').textContent='关键线索已记录！'; }
 
 function toggleCluePanel(){ const p=$('clue-panel'); p.classList.toggle('collapsed'); p.querySelector('.toggle-btn').textContent=p.classList.contains('collapsed')?'▶':'◀'; }
@@ -1031,7 +1050,7 @@ const DOOR_BLOCKERS={
   desk:{x:330,y:238,w:50,h:12},pantry:{x:520,y:238,w:40,h:12},
   meeting:{x:160,y:280,w:50,h:12},elevator:{x:170,y:395,w:50,h:10},feishu:{x:440,y:280,w:60,h:12},
 };
-const NPCS=[
+const NPCS_TEMPLATE = [
   {cid:1, area:'desk',     rx:55, ry:30,  name:'柯晗'},
   {cid:6, area:'desk',     rx:155,ry:30,  name:'张路晴'},
   {cid:9, area:'desk',     rx:268,ry:30,  name:'张艺骞'},
@@ -1040,6 +1059,47 @@ const NPCS=[
   {cid:5, area:'meeting',  rx:148,ry:18,  name:'傅铖茜'},
   {cid:4, area:'elevator', rx:170,ry:18,  name:'杨徉'},
 ];
+let ACTIVE_NPCS = []; // 动态NPC列表，游戏初始化时生成
+
+// 根据玩家角色动态生成NPC名单，防止分身和穿帮
+function buildNPCs(playerCharId) {
+  const deskPool = [ // 机动打工人池
+    {cid:1, area:'desk', rx:55,  ry:30, name:'柯晗'},
+    {cid:6, area:'desk', rx:155, ry:30, name:'张路晴'},
+    {cid:9, area:'desk', rx:268, ry:30, name:'张艺骞'},
+  ];
+  const fixedDefs = [ // 固定岗位定义
+    {cid:3, area:'pantry',   rx:55, ry:65,  name:'徐储同'},
+    {cid:7, area:'pantry',   rx:175,ry:90,  name:'朱矜颖'},
+    {cid:5, area:'meeting',  rx:148,ry:18,  name:'傅铖茜'},
+    {cid:4, area:'elevator', rx:170,ry:18,  name:'杨徉'},
+  ];
+
+  // 从desk池移除玩家本人
+  const filteredDesk = deskPool.filter(d => d.cid !== playerCharId);
+  // 未被调走的desk NPC列表（用于替补）
+  let availableSubs = [...filteredDesk];
+
+  const result = [];
+  for (const f of fixedDefs) {
+    if (f.cid === playerCharId) {
+      // 玩家占据了这个岗位 → 抽一个desk NPC来顶替
+      const sub = availableSubs.shift();
+      if (sub) {
+        result.push({cid: sub.cid, area: f.area, rx: f.rx, ry: f.ry, name: sub.name});
+      }
+      // 被抽调的NPC不出现desk区（后面只渲染remainingDesk）
+    } else {
+      result.push({...f});
+    }
+  }
+
+  // 剩余的desk NPC（未被抽调且不是玩家）
+  const usedSubCids = new Set(result.filter(r => ['pantry','meeting','elevator'].includes(r.area)).map(r => r.cid));
+  const remainingDesk = filteredDesk.filter(d => !usedSubCids.has(d.cid));
+
+  return [...result, ...remainingDesk];
+}
 let player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
 let GAME_LOOP_ID=null, GAME_PAUSED=false, LAST_TIME=0;
 let DPAD_DIR=null;
@@ -1081,7 +1141,7 @@ function drawMap(ctx,glowAlpha){
   (function(){ const img=ASSETS['furn_飞书后台']; if(img&&img.complete&&img.naturalWidth>0){ const h=100; const w=Math.round(img.naturalWidth/img.naturalHeight*h); const fx=392+(386-w)/2, fy=304+(176-h)/2; ctx.save(); ctx.imageSmoothingEnabled=false; ctx.drawImage(img,Math.round(fx),Math.round(fy),w,h); ctx.restore(); } else { drawComputerTerminal(ctx,505,332,glowAlpha); } })();
   ctx.restore();
   for(const [key,a] of Object.entries(AREAS)){ if(!isAreaUnlocked(key)){ ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fillRect(a.x,a.y,a.w,a.h); ctx.fillStyle='#fff'; ctx.font='bold 28px "Noto Sans SC"'; ctx.textAlign='center'; ctx.fillText('🔒',a.x+a.w/2,a.y+a.h/2+10); } }
-  for(const npc of NPCS){ if(npc.cid===G.charId) continue; const a=AREAS[npc.area],c=CHARACTERS[npc.cid]; drawPixelChar(ctx,a.x+npc.rx,a.y+npc.ry,c.color,0,c.at,npc.name); }
+  for(const npc of ACTIVE_NPCS){ if(npc.cid===G.charId) continue; const a=AREAS[npc.area],c=CHARACTERS[npc.cid]; drawPixelChar(ctx,a.x+npc.rx,a.y+npc.ry,c.color,0,c.at,npc.name); }
   if(G.charId!==null){ const c=CHARACTERS[G.charId]; const phase=player.moving?Math.sin(player.walkTime/250*Math.PI):0; drawPixelChar(ctx,player.x,player.y,c.color,phase,c.at,c.name,player.dir); }
   drawFurniture(ctx,'furn_工位1',38,148,80,65,()=>drawDesk(ctx,38,148)); drawFurniture(ctx,'furn_工位2',148,148,80,65,()=>drawDesk(ctx,148,148)); drawFurniture(ctx,'furn_工位3',258,148,72,65,()=>drawDesk(ctx,258,148));
   drawTable(ctx,34,320,220);
@@ -1106,6 +1166,7 @@ function gameLoop(ts){
 function initGame1Canvas(){
   if(GAME_LOOP_ID){ cancelAnimationFrame(GAME_LOOP_ID);GAME_LOOP_ID=null; }
   GAME_PAUSED=false;LAST_TIME=0; G._currentArea=null; $('canvas-hint').classList.remove('show');
+  ACTIVE_NPCS = buildNPCs(G.charId); // 动态重组NPC
   player={x:580,y:253,frame:0,dir:'down',moving:false,walkTime:0};
   $('dpad-container').style.display=window.innerWidth<=768?'flex':'none';
   const canvas=$('game-canvas'); const dpr=window.devicePixelRatio||1;
