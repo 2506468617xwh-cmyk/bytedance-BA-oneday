@@ -785,6 +785,15 @@ function selectChar(id) {
 }
 function confirmCharacter() {
   if (G.charId === null) return;
+  // 重置游戏进度，防止旧角色数据残留
+  G.clues = {};
+  G.dialogues = {};
+  G.yangRound = 0;
+  pickedSuspect = null;
+  G.unlocked = new Set(['desk']);
+  G.areaClicks = {};
+  G._gameLoopRunning = false;
+  updateClueUI();
   updateHubCards();
   showScreen('hub');
 }
@@ -961,7 +970,9 @@ function addClue(sceneId) {
   if (next && !G.unlocked.has(next)) { unlockArea(next); setTimeout(() => { $('game-hint').textContent = UNLOCK_LABELS[next] + ' 已解锁，快去调查！'; }, 2000); }
   $('game-hint').textContent = '获得了新线索！';
   setTimeout(() => { $('game-hint').textContent = 'WASD / 方向键移动小人，按 E 调查'; }, 2200);
-  const guideLines = { desk:'干得不错！茶水间那边好像有人在说话，悄悄过去听听？', pantry:'线索越来越清晰了。会议室里还有些东西没被发现……', meeting:'@杨徉刚才在电梯口，他好像知道点什么。', elevator:'最后一步——飞书后台的删除日志不会说谎。' };
+  const elevatorNPC = ACTIVE_NPCS.find(n => n.area === 'elevator');
+  const elevatorName = elevatorNPC ? elevatorNPC.name : '杨徉';
+  const guideLines = { desk:'干得不错！茶水间那边好像有人在说话，悄悄过去听听？', pantry:'线索越来越清晰了。会议室里还有些东西没被发现……', meeting:`@${elevatorName}刚才在电梯口，${elevatorName==='杨徉'?'他':'TA'}好像知道点什么。`, elevator:'最后一步——飞书后台的删除日志不会说谎。' };
   if (guideLines[sceneId]) setTimeout(()=>{ showGuide(guideLines[sceneId]); },2500);
 }
 function updateClueUI() {
@@ -997,7 +1008,7 @@ async function sceneDeskFolder(btn){ btn.disabled=true;btn.textContent='📁'; c
 async function sceneDeskPrinter(btn){ btn.disabled=true;btn.textContent='🖨️'; const out=$('scene-desk-output'); const l=createLoadingEl();out.appendChild(l); const deskChars=ACTIVE_NPCS.filter(n=>n.area==='desk').map(n=>CHARACTERS[n.cid].at); const extraChars=ACTIVE_NPCS.filter(n=>n.area!=='desk').slice(0,2).map(n=>CHARACTERS[n.cid].at); const allRefs=[...deskChars,...extraChars].join('、'); const text=await callLLM(`请生成一段打印机日志，列出当晚3-4条打印记录，涉及${allRefs}，时间在20:00-23:00之间，内容与周报相关但无异常。格式像打印机日志，简洁，不做判断。`,'生成打印机记录。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('desk'); }
 function buildPantryScene(box){ const npcs=ACTIVE_NPCS.filter(n=>n.area==='pantry').map(n=>n.name); const desc=npcs.length===2?`${npcs[0]}和${npcs[1]}正在茶水间小声聊天，似乎在讨论什么……你悄悄靠近。`:npcs.length===1?`${npcs[0]}正在茶水间，似乎在自言自语……`:'茶水间空荡荡的，但似乎刚有人来过。'; box.innerHTML+=`<p class="scene-desc">${desc}</p><button class="interact-btn" onclick="scenePantryListen(this)" style="margin-bottom:12px;">👂 偷听对话</button><div id="scene-pantry-output"></div>`; }
 async function scenePantryListen(btn){ btn.disabled=true;btn.textContent='👂'; const out=$('scene-pantry-output'); const l=createLoadingEl();out.appendChild(l); const npcs=ACTIVE_NPCS.filter(n=>n.area==='pantry').map(n=>CHARACTERS[n.cid]); const names=npcs.map(c=>c.at).join(' 和 '); const prompt=npcs.length>=2?`请生成一段对话：${npcs[0].at} 和 ${npcs[1].at} 在茶水间小声讨论周报失踪的事。${npcs[0].at}提到桢桢离职前说要帮大家备份文件，${npcs[1].at}说她当时还觉得很贴心。两人都没有想到是出了问题。对话语气自然，不要直接点出是桢桢删的，但让玩家感觉"备份这件事有点可疑"。150字以内。`:`请生成一段独白：${npcs[0]?npcs[0].at:'某人'} 在茶水间喃喃自语关于周报失踪的事情。语气自然。100字以内。`; const text=await callLLM(prompt,'生成茶水间对话。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('pantry'); }
-function buildMeetingScene(box){ const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{name:'某人',at:'@某人'}; box.innerHTML+=`<p class="scene-desc">会议室白板上留着上次开会的痕迹${npc?'，'+c.name+'的笔记本还在...':'，但似乎很久没人来了...'}</p><div class="interact-group"><button class="interact-btn" onclick="sceneMeetingNote(this)">📓 笔记本</button><button class="interact-btn" onclick="sceneMeetingBoard(this)">📋 白板</button></div><div id="scene-meeting-output"></div>`; }
+function buildMeetingScene(box){ const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{at:'@某人'}; box.innerHTML+=`<p class="scene-desc">会议室白板上留着上次开会的痕迹${npc?'，'+c.at+'的笔记本还在...':'，但似乎很久没人来了...'}</p><div class="interact-group"><button class="interact-btn" onclick="sceneMeetingNote(this)">📓 笔记本</button><button class="interact-btn" onclick="sceneMeetingBoard(this)">📋 白板</button></div><div id="scene-meeting-output"></div>`; }
 async function sceneMeetingNote(btn){ btn.disabled=true;btn.textContent='📓'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{at:'@傅铖茜',name:'傅铖茜'}; const text=await callLLM(`请生成一段工作笔记内容，是${c.at}的手写笔记风格：内容主要是当天的工作安排，最后有一行备注："桢桢说已备份周报，记得确认一下。"语气一丝不苟，信息量足，顺带洗清${c.name}的嫌疑。150字以内。`,'生成工作笔记。'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
 async function sceneMeetingBoard(btn){ btn.disabled=true;btn.textContent='📋'; const out=$('scene-meeting-output'); const l=createLoadingEl();out.appendChild(l); const npc=ACTIVE_NPCS.find(n=>n.area==='meeting'); const c=npc?CHARACTERS[npc.cid]:{at:'@傅铖茜',name:'傅铖茜'}; const text=await callLLM(`你是${c.name}（${c.at}），工作一丝不苟。会议室白板上还有你之前写的会议纪要。请生成一段白板笔记，内容周报提交规范提醒。30字以内。`,'白板上写了什么？'); removeLoadingEl(l); out.innerHTML+=`<div class="llm-output">${text||'（生成失败，请重试）'}</div>`; recordClick('meeting'); }
 function buildElevatorScene(box){ G.yangRound=0; const npc=ACTIVE_NPCS.find(n=>n.area==='elevator'); const c=npc?CHARACTERS[npc.cid]:{name:'杨哥',short:'杨哥'}; const nick=c.short||c.name; box.innerHTML+=`<p class="scene-desc">${nick}正在等电梯，看起来心事重重...</p><button class="interact-btn" id="btn-yang-talk" onclick="sceneElevatorTalk(this)" style="margin-bottom:12px;">💬 搭话</button><div id="scene-elevator-output"></div>`; }
