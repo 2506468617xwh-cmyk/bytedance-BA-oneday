@@ -9,7 +9,7 @@ exports.handler = async function(event, context) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+      'Authorization': `Bearer ${process.env.deepseek_api}`
     },
     body: JSON.stringify({ model, messages, max_tokens })
   });
