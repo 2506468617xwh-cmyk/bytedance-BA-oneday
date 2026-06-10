@@ -360,19 +360,16 @@ body { font-family:var(--font-body); background:var(--bg); color:var(--text); mi
       <div class="card-icon">🔍</div>
       <div class="card-title">周报失踪之谜</div>
       <div class="card-desc">商分 · 职场剧本杀</div>
-      <div class="card-status unlocked" id="hub-status-1">✅ 可进入</div>
     </div>
-    <div class="hub-card locked" id="hub-game2">
+    <div class="hub-card" id="hub-game2" onclick="startMinerGame()">
       <div class="card-icon">⛏️</div>
       <div class="card-title">职场矿工</div>
       <div class="card-desc">黄金矿工 · 摸鱼大作战</div>
-      <div class="card-status locked-st" id="hub-status-2">🔒 通关Game 1解锁</div>
     </div>
-    <div class="hub-card locked" id="hub-game3">
+    <div class="hub-card" id="hub-game3" onclick="openBATIGame()">
       <div class="card-icon">🧬</div>
       <div class="card-title">BATI人格测试</div>
       <div class="card-desc">商分人 · 你是哪种打工生物？</div>
-      <div class="card-status locked-st" id="hub-status-3">🔒 通关Game 2解锁</div>
     </div>
   </div>
   <div class="hub-card" id="hub-letter" onclick="openLetter()" style="cursor:pointer;">
@@ -909,13 +906,7 @@ function renderLetter(charName) {
 }
 
 // ============ GAME HUB ============
-function updateHubCards() {
-  const g1 = $('hub-game1'); const g2 = $('hub-game2'); const g3 = $('hub-game3');
-  const s1 = $('hub-status-1'); const s2 = $('hub-status-2'); const s3 = $('hub-status-3');
-  if (G.unlockedGames >= 1) { g1.classList.remove('locked'); s1.textContent = '✅ 可进入'; s1.className = 'card-status unlocked'; }
-  if (G.unlockedGames >= 2) { g2.classList.remove('locked'); g2.setAttribute('onclick', 'startMinerGame()'); s2.textContent = '🆕 新解锁'; s2.className = 'card-status new'; }
-  if (G.unlockedGames >= 3) { g3.classList.remove('locked'); g3.setAttribute('onclick', 'openBATIGame()'); s3.textContent = '🆕 新解锁'; s3.className = 'card-status new'; }
-}
+function updateHubCards() { /* 全开放模式，无需更新状态 */ }
 
 // ============ SCREEN 3: CASE INTRO (Game 1) ============
 function startGame1() { showScreen('intro'); startTypewriter(); }
@@ -1034,7 +1025,7 @@ async function generateEnding(){
   $('ending-reactions').innerHTML=reactions.map((r,i)=>`<div class="react-item" style="animation-delay:${i*0.15}s"><strong>${r.at}</strong>：${r.text}</div>`).join('');
 }
 function showLetter(){ showScreen('letter'); const c=G.charId!==null?CHARACTERS[G.charId]:{name:'侦探',at:'@侦探'}; $('letter-content').innerHTML=`<div class="dear">亲爱的 ${c.name}：</div><p>感谢你参与《周报失踪之谜》——商分·职场剧本杀。</p><p>在这个周四的夜晚，你化身为${c.at}，穿梭于工位、茶水间、会议室与电梯口之间，拼凑出真相的碎片。</p><p>周报虽然消失了，但故事里的每一个人……都真实地活在这些文字里。</p><p>职场有职场的规则，但更有职场的温度。</p><p>希望你喜欢这个故事。保持好奇心，下次再见。</p><div class="sign-off">—— 商分 · 全员敬上</div>`; }
-function goToHub(){ G.unlockedGames = Math.max(G.unlockedGames, 2); updateHubCards(); showScreen('hub'); }
+function goToHub(){ showScreen('hub'); }
 function resetGame(){ G.charId=null; G.clues={}; G.dialogues={}; G.yangRound=0; pickedSuspect=null; G.unlocked=new Set(['desk']); G.areaClicks={}; G._gameLoopRunning=false; buildCharGrid(); $('btn-char-confirm').disabled=true; showScreen('api'); updateClueUI(); }
 
 // ============================================================================
@@ -1372,7 +1363,6 @@ function endMinerRound(won){
   if(minerRAF){ cancelAnimationFrame(minerRAF); minerRAF=null; }
   $('miner-hint').style.display='none';
   if(won){
-    G.unlockedGames = Math.max(G.unlockedGames, 3); updateHubCards();
     showMinerVictory();
   } else {
     toast('⏰ 时间耗尽！最终得分：' + MS.score, 3000);
