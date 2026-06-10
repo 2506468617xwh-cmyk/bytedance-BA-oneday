@@ -1355,7 +1355,7 @@ const BATI_QUESTIONS = [
 ];
 
 function calcBATIType(scores){
-  const bH=scores.B>=5, aH=scores.A>=5, tH=scores.T>=5, iH=scores.I>=5;
+  const bH=scores.B>=3, aH=scores.A>=3, tH=scores.T>=3, iH=scores.I>=3;
   const key=`${bH?1:0}${aH?1:0}${tH?1:0}${iH?1:0}`;
   return {'1111':{code:'PHDX',name:'全能打工皇帝',desc:'Professional Hard-core Drifter eXtraordinary。既能卷又能摸还带点抽象，堪称职场薛定谔。领导问你在干嘛你说"在忙"，实际上你自己也不知道。',color:'#E85D26'},
     '1110':{code:'TALK',name:'商务抽象播报机',desc:'Talking A Lot, Known-for-nothing。开会永远第一个发言，结束永远没人记得你说了什么。PPT做了50页，每页只有一个问号。',color:'#D4A017'},
@@ -1462,7 +1462,7 @@ function skipTapQuestion() {
 }
 function showBATIResult(){
   const s=batiState.scores; const type=calcBATIType(s); const code=type.code;
-  const rawCode=(s.B>=5?'B':'b')+(s.A>=5?'A':'a')+(s.T>=5?'T':'t')+(s.I>=5?'I':'i');
+  const rawCode=(s.B>=3?'B':'b')+(s.A>=3?'A':'a')+(s.T>=3?'T':'t')+(s.I>=3?'I':'i');
   $('screen-bati').innerHTML=`<div class="bati-wrap"><div class="bati-result-card">
     <div style="font-size:.9rem;color:#999;margin-bottom:4px;">你的商分人格是</div>
     <div class="bati-result-code">${code}</div><div class="bati-result-name">${type.name}</div>
